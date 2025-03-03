@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home_content.dart'; // Import HomeContent
-import '../widgets/custom_bottom_navbar.dart';
-import '../models/nav_item.dart';
+import 'home_content.dart';
+import '../navbar/custom_bottom_navbar.dart';
+import '../navbar/nav_item.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,22 +11,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentPage = 0;
+  int _currentPage = 1; // Mulai dengan Home terpilih
 
-  final List<NavItem> _navItems = const [
-    NavItem(label: 'Santri', icon: Icons.people, page: SantriPage()),
-    NavItem(
-      label: 'Home',
-      icon: Icons.home,
-      page: HomeContent(), // Sekarang sudah bisa diakses
-    ),
+  // Simpan semua halaman dalam variabel agar tidak hilang saat berpindah
+  late final Widget _santriPage = SantriPage();
+  late final Widget _homePage = HomeContent();
+  late final Widget _announcementPage = AnnouncementPage();
 
-    NavItem(
-      label: 'Pengumuman',
-      icon: Icons.announcement,
-      page: AnnouncementPage(),
-    ),
-  ];
+  // Bangun NavItems menggunakan halaman yang sudah dibuat
+  late final List<NavItem> _navItems;
+
+  @override
+  void initState() {
+    super.initState();
+    _navItems = [
+      NavItem(label: 'Santri', icon: Icons.calendar_today, page: _santriPage),
+      NavItem(label: 'Home', icon: Icons.home, page: _homePage),
+      NavItem(
+        label: 'Pengumuman',
+        icon: Icons.chat_bubble_outline,
+        page: _announcementPage,
+      ),
+    ];
+  }
 
   void _navigate(int index) {
     setState(() {
@@ -38,24 +45,30 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard Santri')),
-      body: _navItems[_currentPage].page,
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _currentPage,
-        items: _navItems,
-        onTap: _navigate,
+      body: IndexedStack(
+        index: _currentPage,
+        children: [_santriPage, _homePage, _announcementPage],
+      ),
+      extendBody: true,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 0),
+        child: CustomBottomNavBar(
+          currentIndex: _currentPage,
+          items: _navItems,
+          onTap: _navigate,
+        ),
       ),
     );
   }
 }
 
-// ... (HomeContent, SantriPage, AnnouncementPage tetap sama seperti sebelumnya)
 // Halaman dummy untuk navigasi
 class SantriPage extends StatelessWidget {
   const SantriPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Halaman Data Santri'));
+    return const Center(child: Text('Jadwal Adzan'));
   }
 }
 
@@ -64,6 +77,6 @@ class AnnouncementPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Halaman Pengumuman'));
+    return const Center(child: Text('Halaman FAQ dan chat admin'));
   }
 }

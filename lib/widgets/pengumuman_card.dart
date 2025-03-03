@@ -7,6 +7,7 @@ class PengumumanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
