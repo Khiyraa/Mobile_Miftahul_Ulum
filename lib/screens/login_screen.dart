@@ -4,8 +4,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'home_screen.dart';
 
 void main() {
-  runApp( MaterialApp(
-    home: LoginScreen(), 
+  runApp(MaterialApp(
+    home: LoginScreen(),
   ));
 }
 
@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Login", style: GoogleFonts.poppins())),
@@ -32,15 +32,15 @@ class LoginScreen extends StatelessWidget {
                     height: 180,
                     decoration: BoxDecoration(
                       color: Colors.teal,
-                      borderRadius: BorderRadius.circular(16), // Membuat sudut membulat
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   Positioned(
-                    top: 30,
-                    left: 30,
+                    top: -60,
+                    left: -60, 
                     child: Container(
-                      width: 100,
-                      height: 100,
+                      width: 300,
+                      height: 300,
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         shape: BoxShape.circle,
@@ -48,13 +48,13 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    top: 70,
-                    right: 40,
+                    top: -40,
+                    left: -40, 
                     child: Container(
-                      width: 60,
-                      height: 60,
+                      width: 200,
+                      height: 200,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -109,7 +109,11 @@ class LoginScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(builder: (context) => HomeScreen()),);
+                  },
                   child: const Text(
                     "Masuk",
                     style: TextStyle(fontSize: 16, color: Colors.white),
