@@ -3,9 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'home_screen.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: LoginScreen(),
-  ));
+  runApp(MaterialApp(home: LoginScreen()));
 }
 
 class LoginScreen extends StatefulWidget {
@@ -27,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Background Hijau 
+            // Background Hijau
             Container(
               width: double.infinity,
               height: 200,
@@ -109,7 +107,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureText ? Icons.visibility : Icons.visibility_off,
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
