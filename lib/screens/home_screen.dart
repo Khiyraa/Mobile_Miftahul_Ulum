@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'home_content.dart';
+import 'faq_form.dart'; // Import FaqForm
 import '../navbar/custom_bottom_navbar.dart';
 import '../navbar/nav_item.dart';
+import 'chat_admin_screen.dart'; // Import halaman chat admin (pastikan file ini dibuat)
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,9 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 1; // Mulai dengan Home terpilih
 
   // Simpan semua halaman dalam variabel agar tidak hilang saat berpindah
-  late final Widget _santriPage = SantriPage();
-  late final Widget _homePage = HomeContent();
-  late final Widget _announcementPage = AnnouncementPage();
+  late final Widget _santriPage = const SantriPage();
+  late final Widget _homePage = const HomeContent();
+  late final Widget _faqPage = const FaqForm(); // Ganti dengan FaqForm
 
   // Bangun NavItems menggunakan halaman yang sudah dibuat
   late final List<NavItem> _navItems;
@@ -30,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
       NavItem(
         label: 'Pengumuman',
         icon: Icons.chat_bubble_outline,
-        page: _announcementPage,
+        page: _faqPage,
       ),
     ];
   }
@@ -47,11 +49,26 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(title: const Text('Dashboard Santri')),
       body: IndexedStack(
         index: _currentPage,
-        children: [_santriPage, _homePage, _announcementPage],
+        children: [_santriPage, _homePage, _faqPage],
       ),
+      floatingActionButton:
+          _currentPage ==
+                  2 // Jika halaman FAQ
+              ? FloatingActionButton.extended(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ChatAdminScreen()),
+                  );
+                },
+                label: const Text('Customer Service'),
+                icon: const Icon(Icons.support_agent),
+                backgroundColor: Colors.blueAccent,
+              )
+              : null,
       extendBody: true,
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(bottom: 0),
+        padding: const EdgeInsets.only(bottom: 0),
         child: CustomBottomNavBar(
           currentIndex: _currentPage,
           items: _navItems,
@@ -69,14 +86,5 @@ class SantriPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(child: Text('Jadwal Adzan'));
-  }
-}
-
-class AnnouncementPage extends StatelessWidget {
-  const AnnouncementPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text('Halaman FAQ dan chat admin'));
   }
 }
