@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_content.dart';
 import '../navbar/custom_bottom_navbar.dart';
 import '../navbar/nav_item.dart';
+import '../screens/jadwal_shalat_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 1; // Mulai dengan Home terpilih
 
   // Simpan semua halaman dalam variabel agar tidak hilang saat berpindah
-  late final Widget _santriPage = SantriPage();
+  late final Widget _jadwalShalatPage = JadwalShalatPage();
   late final Widget _homePage = HomeContent();
   late final Widget _announcementPage = AnnouncementPage();
 
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _navItems = [
-      NavItem(label: 'Santri', icon: Icons.calendar_today, page: _santriPage),
+      NavItem(label: 'Santri', icon: Icons.calendar_today, page: _jadwalShalatPage),
       NavItem(label: 'Home', icon: Icons.home, page: _homePage),
       NavItem(
         label: 'Pengumuman',
@@ -44,10 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard Santri')),
+      appBar: _currentPage == 1 // Hanya tampil di HomeContent
+          ? AppBar(title: const Text('Dashboard Santri'))
+          : null, // AppBar tidak muncul di halaman lain
       body: IndexedStack(
         index: _currentPage,
-        children: [_santriPage, _homePage, _announcementPage],
+        children: [_jadwalShalatPage, _homePage, _announcementPage],
       ),
       extendBody: true,
       bottomNavigationBar: Padding(
@@ -62,15 +65,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Halaman dummy untuk navigasi
-class SantriPage extends StatelessWidget {
-  const SantriPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text('Jadwal Adzan'));
-  }
-}
+// Halaman dummy untuk navigasi
+// class SantriPage extends StatelessWidget {
+//   const SantriPage({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Center(child: Text('Jadwal Adzan'));
+//   }
+// }
 
 class AnnouncementPage extends StatelessWidget {
   const AnnouncementPage({super.key});
