@@ -52,7 +52,7 @@ class _JadwalShalatViewState extends State<JadwalShalatView> {
               if (jadwal == null) {
                 return Center(child: CircularProgressIndicator());
               }
-              return JadwalCard(jadwal: jadwal);
+              return JadwalCard(jadwal: jadwal, namaDaerah: selectedCity,);
             },
           ),
         ],
