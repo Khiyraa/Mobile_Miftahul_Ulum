@@ -51,21 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _currentPage,
         children: [_santriPage, _homePage, _faqPage],
       ),
-      floatingActionButton:
-          _currentPage ==
-                  2 // Jika halaman FAQ
-              ? FloatingActionButton.extended(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ChatAdminScreen()),
-                  );
-                },
-                label: const Text('Customer Service'),
-                icon: const Icon(Icons.support_agent),
-                backgroundColor: Colors.blueAccent,
-              )
-              : null,
+
       extendBody: true,
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 0),
