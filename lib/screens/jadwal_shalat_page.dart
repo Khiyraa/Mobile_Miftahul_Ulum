@@ -8,6 +8,8 @@ import '../widgets/jadwal_card.dart';
 import '../models/jadwal_shalat_model.dart';
 
 class JadwalShalatPage extends StatelessWidget {
+  const JadwalShalatPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -18,6 +20,8 @@ class JadwalShalatPage extends StatelessWidget {
 }
 
 class JadwalShalatView extends StatefulWidget {
+  const JadwalShalatView({super.key});
+
   @override
   _JadwalShalatViewState createState() => _JadwalShalatViewState();
 }
@@ -29,7 +33,10 @@ class _JadwalShalatViewState extends State<JadwalShalatView> {
   @override
   void initState() {
     super.initState();
-    context.read<JadwalShalatCubit>().getJadwalShalat(selectedCity, selectedCountry);
+    context.read<JadwalShalatCubit>().getJadwalShalat(
+      selectedCity,
+      selectedCountry,
+    );
   }
 
   @override
@@ -44,7 +51,10 @@ class _JadwalShalatViewState extends State<JadwalShalatView> {
               setState(() {
                 selectedCity = city;
               });
-              context.read<JadwalShalatCubit>().getJadwalShalat(selectedCity, selectedCountry);
+              context.read<JadwalShalatCubit>().getJadwalShalat(
+                selectedCity,
+                selectedCountry,
+              );
             },
           ),
           BlocBuilder<JadwalShalatCubit, JadwalShalatModel?>(
@@ -52,7 +62,7 @@ class _JadwalShalatViewState extends State<JadwalShalatView> {
               if (jadwal == null) {
                 return Center(child: CircularProgressIndicator());
               }
-              return JadwalCard(jadwal: jadwal, namaDaerah: selectedCity,);
+              return JadwalCard(jadwal: jadwal, namaDaerah: selectedCity);
             },
           ),
         ],
