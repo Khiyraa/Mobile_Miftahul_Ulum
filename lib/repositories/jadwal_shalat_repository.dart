@@ -13,7 +13,7 @@ class JadwalShalatRepository {
       final timings = jsonData['data']['timings'];
       return JadwalShalatModel.fromJson(timings);
     } else {
-      throw Exception('Gagal mengambil data');
+      throw Exception('Gagal mengambil data API');
     }
   }
 }
