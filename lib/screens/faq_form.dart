@@ -115,7 +115,6 @@ class _FaqFormState extends State<FaqForm> {
           ),
         ),
         child: SafeArea(
-          // Tambahin SafeArea biar gak nabrak status bar
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,45 +187,6 @@ class _FaqFormState extends State<FaqForm> {
                     label: const Text('Butuh Bantuan? Chat Kami'),
                   ),
                 ),
-                const Divider(thickness: 1),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        '🎬 Video Tutorial: Cara Registrasi Akun Mobile',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.black12,
-                          ),
-                          child: Center(
-                            child: TextButton(
-                              onPressed: () {
-                                launchUrl(
-                                  'https://youtu.be/dap9Ml_RvJc?si=KpRMiYn_v5crr9z3',
-                                );
-                              },
-                              child: const Text(
-                                'Tonton Video di YouTube',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 20),
               ],
             ),
@@ -246,9 +206,5 @@ class _FaqFormState extends State<FaqForm> {
         });
       },
     );
-  }
-
-  void launchUrl(String url) async {
-    // fungsi untuk membuka link
   }
 }
