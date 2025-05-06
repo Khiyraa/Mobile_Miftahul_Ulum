@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_miftahul_ulum/screens/jadwal_shalat_page.dart';
 import 'home_content.dart';
 import 'faq_form.dart'; // Import FaqForm
 import '../navbar/custom_bottom_navbar.dart';
@@ -16,9 +17,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 1; // Mulai dengan Home terpilih
 
   // Simpan semua halaman dalam variabel agar tidak hilang saat berpindah
-  late final Widget _santriPage = const SantriPage();
-  late final Widget _homePage = const HomeContent();
-  late final Widget _faqPage = const FaqForm(); // Ganti dengan FaqForm
+  late final Widget _jadwalShalatPage = JadwalShalatPage();
+  late final Widget _homePage = HomeContent();
+  late final Widget _faqPage = FaqForm(); // Ganti dengan FaqForm
 
   // Bangun NavItems menggunakan halaman yang sudah dibuat
   late final List<NavItem> _navItems;
@@ -27,7 +28,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _navItems = [
-      NavItem(label: 'Santri', icon: Icons.calendar_today, page: _santriPage),
+      NavItem(
+        label: 'Santri',
+        icon: Icons.calendar_today,
+        page: _jadwalShalatPage,
+      ),
       NavItem(label: 'Home', icon: Icons.home, page: _homePage),
       NavItem(
         label: 'Pengumuman',
@@ -49,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(title: const Text('Dashboard Santri')),
       body: IndexedStack(
         index: _currentPage,
-        children: [_santriPage, _homePage, _faqPage],
+        children: [_jadwalShalatPage, _homePage, _faqPage],
       ),
 
       extendBody: true,
