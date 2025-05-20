@@ -35,7 +35,7 @@ class _JadwalShalatViewState extends State<JadwalShalatView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Jadwal Shalat")),
+      // appBar: AppBar(title: Text("Jadwal Shalat")),
       body: Column(
         children: [
           TanggalCard(),
