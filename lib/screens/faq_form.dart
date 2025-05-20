@@ -180,7 +180,7 @@ class _FaqFormState extends State<FaqForm> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ChatAdminScreen(),
+                          builder: (context) => const ChatScreen(),
                         ),
                       );
                     },
