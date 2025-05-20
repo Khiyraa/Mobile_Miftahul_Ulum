@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class DropdownLokasi extends StatefulWidget {
   final Function(String) onCitySelected;
 
-  DropdownLokasi({required this.onCitySelected});
+  const DropdownLokasi({super.key, required this.onCitySelected});
 
   @override
   _DropdownLokasiState createState() => _DropdownLokasiState();
@@ -12,10 +12,22 @@ class DropdownLokasi extends StatefulWidget {
 class _DropdownLokasiState extends State<DropdownLokasi> {
   // Daftar Provinsi di Pulau Jawa
   final Map<String, List<String>> provinsiKota = {
-    "DKI Jakarta": ["Jakarta Pusat", "Jakarta Barat", "Jakarta Selatan", "Jakarta Timur", "Jakarta Utara"],
+    "DKI Jakarta": [
+      "Jakarta Pusat",
+      "Jakarta Barat",
+      "Jakarta Selatan",
+      "Jakarta Timur",
+      "Jakarta Utara",
+    ],
     "Jawa Barat": ["Bandung", "Bekasi", "Bogor", "Depok", "Cirebon"],
     "Jawa Tengah": ["Semarang", "Solo", "Magelang", "Tegal", "Pekalongan"],
-    "DI Yogyakarta": ["Yogyakarta", "Bantul", "Sleman", "Gunungkidul", "Kulon Progo"],
+    "DI Yogyakarta": [
+      "Yogyakarta",
+      "Bantul",
+      "Sleman",
+      "Gunungkidul",
+      "Kulon Progo",
+    ],
     "Jawa Timur": ["Surabaya", "Malang", "Kediri", "Jember", "Madiun"],
     "Banten": ["Serang", "Tangerang", "Cilegon", "Lebak", "Pandeglang"],
   };
@@ -37,19 +49,23 @@ class _DropdownLokasiState extends State<DropdownLokasi> {
               if (value != null) {
                 setState(() {
                   selectedProvinsi = value;
-                  selectedCity = provinsiKota[value]![0]; // Reset kota ke yang pertama
+                  selectedCity =
+                      provinsiKota[value]![0]; // Reset kota ke yang pertama
                 });
                 widget.onCitySelected(selectedCity);
               }
             },
-            items: provinsiKota.keys.map((provinsi) {
-              return DropdownMenuItem(value: provinsi, child: Text(provinsi));
-            }).toList(),
+            items:
+                provinsiKota.keys.map((provinsi) {
+                  return DropdownMenuItem(
+                    value: provinsi,
+                    child: Text(provinsi),
+                  );
+                }).toList(),
           ),
         ),
 
         SizedBox(width: 16), // Spacer agar ada jarak
-
         // Dropdown untuk Kota
         Expanded(
           child: DropdownButton<String>(
@@ -62,9 +78,10 @@ class _DropdownLokasiState extends State<DropdownLokasi> {
                 widget.onCitySelected(value);
               }
             },
-            items: provinsiKota[selectedProvinsi]!.map((city) {
-              return DropdownMenuItem(value: city, child: Text(city));
-            }).toList(),
+            items:
+                provinsiKota[selectedProvinsi]!.map((city) {
+                  return DropdownMenuItem(value: city, child: Text(city));
+                }).toList(),
           ),
         ),
       ],
