@@ -285,12 +285,11 @@ class _ChatScreenState extends State<ChatScreen> {
           });
           _waitingForAdminResponse = false;
         });
-      } else if (autoResponse == null) {
-        // For other messages when admin is online
-        setState(() {
-          _waitingForAdminResponse = true;
-        });
-      }
+      } else      // For other messages when admin is online
+      setState(() {
+        _waitingForAdminResponse = true;
+      });
+    
     } catch (e) {
       print('Error sending message: $e');
       setState(() {
