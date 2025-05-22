@@ -10,245 +10,248 @@ class FaqForm extends StatefulWidget {
 
 class _FaqFormState extends State<FaqForm> {
   String selectedCategory = 'Semua';
+  TextEditingController searchController = TextEditingController();
+  String searchQuery = '';
 
-  final Map<String, List<Map<String, String>>> faqData = {
-    'Akun': [
+  final Map<String, List<Map<String, dynamic>>> faqData = {
+    'Umum': [
       {
-        'question': 'Bagaimana cara mendaftar akun?',
-        'answer': 'Unduh aplikasi, lalu klik daftar dan isi formulir.',
+        'question': 'Bagaimana cara mengganti password serta username ?',
+        'answer': 'Untuk lebih lanjut silakan hubungi pengurus pondok .',
+        'icon': Icons.person,
       },
       {
-        'question': 'Bagaimana cara mengganti password?',
-        'answer': 'Masuk ke Pengaturan Akun lalu pilih Ganti Password.',
+        'question': 'Bagaimana memantau kedisiplinan anak?',
+        'answer': 'Masuk ke halaman Dashboard untuk melihat data kedisiplinan.',
+        'icon': Icons.bar_chart,
       },
       {
-        'question': 'Bagaimana cara memperbarui email?',
-        'answer': 'Buka Profil, klik Edit, lalu ubah email.',
+        'question': 'Bagaimana cara melihat pengumuman dari pondok?',
+        'answer':
+            'Pengumuman akan tampil di Dashboard aplikasi secara berkala.',
+        'icon': Icons.announcement,
       },
       {
-        'question': 'Bagaimana jika lupa username?',
-        'answer': 'Hubungi admin melalui fitur Chat untuk reset username.',
-      },
-    ],
-    'Jadwal': [
-      {
-        'question': 'Bagaimana melihat jadwal?',
-        'answer': 'Masuk ke halaman Jadwal pada dashboard aplikasi.',
-      },
-      {
-        'question': 'Bagaimana mengganti jadwal?',
-        'answer': 'Pilih jadwal yang diinginkan lalu klik "Ajukan Perubahan".',
-      },
-      {
-        'question': 'Kapan jadwal diperbarui?',
-        'answer': 'Jadwal diperbarui setiap hari Minggu pukul 20.00 WIB.',
-      },
-      {
-        'question': 'Apa yang terjadi jika terlambat jadwal?',
-        'answer': 'Segera konfirmasi kepada admin melalui aplikasi.',
+        'question': 'Apakah saya bisa bertanya langsung ke pengurus?',
+        'answer':
+            'Ya, gunakan fitur Chat untuk berkomunikasi langsung dengan pengurus pondok.',
+        'icon': Icons.chat,
       },
     ],
     'Teknis': [
       {
-        'question': 'Kenapa aplikasi tidak bisa dibuka?',
-        'answer': 'Coba update aplikasi atau cek koneksi internet Anda.',
+        'question': 'Aplikasi tidak bisa dibuka, apa yang harus saya lakukan?',
+        'answer': 'Coba restart HP atau perbarui aplikasi ke versi terbaru.',
+        'icon': Icons.warning,
       },
       {
-        'question': 'Bagaimana cara mengupdate aplikasi?',
+        'question': 'Bagaimana jika saya tidak menerima notifikasi?',
         'answer':
-            'Buka Play Store/App Store lalu klik Update di aplikasi kami.',
-      },
-      {
-        'question': 'Kenapa saya tidak menerima notifikasi?',
-        'answer': 'Pastikan izin notifikasi diaktifkan di pengaturan HP Anda.',
-      },
-      {
-        'question': 'Bagaimana cara clear cache aplikasi?',
-        'answer':
-            'Masuk ke Pengaturan > Aplikasi > Pilih Aplikasi > Hapus Cache.',
-      },
-    ],
-    'Kebijakan': [
-      {
-        'question': 'Apakah data saya aman?',
-        'answer':
-            'Kami melindungi data Anda dengan sistem enkripsi tingkat tinggi.',
-      },
-      {
-        'question': 'Bagaimana kebijakan refund?',
-        'answer':
-            'Refund hanya bisa dilakukan jika sesuai dengan syarat dan ketentuan.',
-      },
-      {
-        'question': 'Apakah akun bisa dinonaktifkan?',
-        'answer': 'Akun dapat dinonaktifkan jika melanggar ketentuan layanan.',
-      },
-      {
-        'question': 'Bagaimana saya menyetujui kebijakan privasi?',
-        'answer':
-            'Dengan menggunakan aplikasi, Anda otomatis setuju dengan kebijakan kami.',
+            'Pastikan izin notifikasi untuk aplikasi ini sudah aktif di pengaturan HP Anda.',
+        'icon': Icons.notifications,
       },
     ],
   };
 
+  List<Map<String, dynamic>> getVisibleFaqs() {
+    if (selectedCategory == 'Semua') {
+      List<Map<String, dynamic>> allFaqs = [];
+      faqData.forEach((_, faqs) {
+        allFaqs.addAll(faqs);
+      });
+      return searchQuery.isEmpty
+          ? allFaqs
+          : allFaqs.where((faq) {
+            return faq['question'].toLowerCase().contains(
+                  searchQuery.toLowerCase(),
+                ) ||
+                faq['answer'].toLowerCase().contains(searchQuery.toLowerCase());
+          }).toList();
+    } else {
+      final filteredFaqs = faqData[selectedCategory] ?? [];
+      return searchQuery.isEmpty
+          ? filteredFaqs
+          : filteredFaqs.where((faq) {
+            return faq['question'].toLowerCase().contains(
+                  searchQuery.toLowerCase(),
+                ) ||
+                faq['answer'].toLowerCase().contains(searchQuery.toLowerCase());
+          }).toList();
+    }
+  }
+
+  Widget _buildCategoryButton(String label, IconData icon) {
+    final isSelected = selectedCategory == label;
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isSelected ? Colors.teal : Colors.grey.shade200,
+        foregroundColor: isSelected ? Colors.white : Colors.teal,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+      ),
+      onPressed: () {
+        setState(() {
+          selectedCategory = label;
+        });
+      },
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Map<String, String>> getVisibleFaqs() {
-      if (selectedCategory == 'Semua') {
-        return [
-          faqData['Akun']![0],
-          faqData['Jadwal']![0],
-          faqData['Teknis']![0],
-          faqData['Kebijakan']![0],
-        ];
-      } else {
-        return faqData[selectedCategory]!;
-      }
-    }
+    final faqs = getVisibleFaqs();
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background_pattern.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: SafeArea(
-          // Tambahin SafeArea biar gak nabrak status bar
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  color: Colors.orange.shade100,
-                  child: const Text(
-                    'Baru! Fitur Live Chat tersedia untuk semua pengguna.',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Informational banner
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              color: Colors.teal.withOpacity(0.1),
+              child: Row(
+                children: [
+                  const Icon(Icons.info, color: Colors.teal),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Jika Anda memiliki pertanyaan lain, silakan gunakan fitur Chat.',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Search field
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Cari pertanyaan...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon:
+                      searchQuery.isNotEmpty
+                          ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              searchController.clear();
+                              setState(() => searchQuery = '');
+                            },
+                          )
+                          : null,
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildCategoryButton('Akun'),
-                      _buildCategoryButton('Jadwal'),
-                      _buildCategoryButton('Teknis'),
-                      _buildCategoryButton('Kebijakan'),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children:
-                        getVisibleFaqs().map((item) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Card(
-                              elevation: 3,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                onChanged: (value) => setState(() => searchQuery = value),
+              ),
+            ),
+
+            // Category selector
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  _buildCategoryButton('Semua', Icons.list),
+                  const SizedBox(width: 8),
+                  _buildCategoryButton('Umum', Icons.info),
+                  const SizedBox(width: 8),
+                  _buildCategoryButton('Teknis', Icons.settings),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // FAQ list
+            Expanded(
+              child:
+                  faqs.isEmpty
+                      ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(
+                              Icons.search_off,
+                              size: 60,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 16),
+                            Text('Tidak ada hasil ditemukan'),
+                          ],
+                        ),
+                      )
+                      : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: faqs.length,
+                        itemBuilder: (context, index) {
+                          final faq = faqs[index];
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 2,
+                            child: ExpansionTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.teal.withOpacity(0.1),
+                                child: Icon(faq['icon'], color: Colors.teal),
                               ),
-                              child: ExpansionTile(
-                                title: Text(
-                                  item['question']!,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              title: Text(
+                                faq['question'],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: Text(item['answer']!),
-                                  ),
-                                ],
                               ),
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(faq['answer']),
+                                ),
+                              ],
                             ),
                           );
-                        }).toList(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Center(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ChatScreen(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.chat),
-                    label: const Text('Butuh Bantuan? Chat Kami'),
-                  ),
-                ),
-                const Divider(thickness: 1),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        '🎬 Video Tutorial: Cara Registrasi Akun Mobile',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                        },
                       ),
-                      const SizedBox(height: 12),
-                      AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.black12,
-                          ),
-                          child: Center(
-                            child: TextButton(
-                              onPressed: () {
-                                launchUrl(
-                                  'https://youtu.be/dap9Ml_RvJc?si=KpRMiYn_v5crr9z3',
-                                );
-                              },
-                              child: const Text(
-                                'Tonton Video di YouTube',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
             ),
-          ),
+
+            // Button to go to chat
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 2, 124, 112),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                icon: const Icon(Icons.chat),
+                label: const Text("Chat Pengurus Pondok"),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ChatAdminScreen()),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
-  }
-
-  Widget _buildCategoryButton(String category) {
-    return ChoiceChip(
-      label: Text(category),
-      selected: selectedCategory == category,
-      onSelected: (_) {
-        setState(() {
-          selectedCategory = category;
-        });
-      },
-    );
-  }
-
-  void launchUrl(String url) async {
-    // fungsi untuk membuka link
   }
 }

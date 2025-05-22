@@ -8,65 +8,33 @@ class DisiplinCard extends StatelessWidget {
     return Card(
       elevation: 4,
       color: const Color(0xFF1D7A81),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Bagian Kiri (Text)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Tingkat',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w300,
-                  ),
-                ),
-                const Text(
-                  'Kedisiplinan Santri',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 15),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    'Sangat Disiplin',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
+            const Icon(Icons.military_tech, color: Colors.amber, size: 24),
+            const SizedBox(height: 8),
+            const Text(
+              'Kedisiplinan',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-
-            // Bagian Kanan (Progress Circle)
+            const SizedBox(height: 12),
             Stack(
               alignment: Alignment.center,
               children: [
                 SizedBox(
-                  width: 80,
-                  height: 80,
+                  width: 50,
+                  height: 50,
                   child: CircularProgressIndicator(
                     value: 0.85,
-                    strokeWidth: 8,
-                    backgroundColor: const Color(0xFF1D7A81).withOpacity(0.2),
+                    strokeWidth: 4,
+                    backgroundColor: Colors.white.withOpacity(0.3),
                     valueColor: const AlwaysStoppedAnimation<Color>(
                       Colors.amber,
                     ),
@@ -76,11 +44,27 @@ class DisiplinCard extends StatelessWidget {
                   '85%',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                'Sangat Baik',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ],
         ),
