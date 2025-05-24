@@ -4,7 +4,7 @@ import 'home_content.dart';
 import 'faq_form.dart'; // Import FaqForm
 import '../navbar/custom_bottom_navbar.dart';
 import '../navbar/nav_item.dart';
-import 'chat_admin_screen.dart'; // Import halaman chat admin (pastikan file ini dibuat)
+// Import halaman chat admin (pastikan file ini dibuat)
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,9 +17,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 1; // Mulai dengan Home terpilih
 
   // Simpan semua halaman dalam variabel agar tidak hilang saat berpindah
-  late final Widget _jadwalShalatPage = JadwalShalatPage();
-  late final Widget _homePage = HomeContent();
-  late final Widget _faqPage = FaqForm(); // Ganti dengan FaqForm
+  late final Widget _jadwalShalatPage = const JadwalShalatPage();
+  late final Widget _homePage = const HomeContent();
+  late final Widget _faqPage = const FaqForm(); // Ganti dengan FaqForm
 
   // Bangun NavItems menggunakan halaman yang sudah dibuat
   late final List<NavItem> _navItems;
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       NavItem(
         label: 'Santri',
         icon: Icons.calendar_today,
-        page: _jadwalShalatPage,
+        page: JadwalShalatPage(),
       ),
       NavItem(label: 'Home', icon: Icons.home, page: _homePage),
       NavItem(
