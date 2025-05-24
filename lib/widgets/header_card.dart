@@ -27,7 +27,7 @@ class HeaderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     Text(
-                      'Assalamu\'alaikum',
+                      'Santri Miftahul Ulum',
                       style: TextStyle(color: Colors.white70, fontSize: 14),
                     ),
                     SizedBox(height: 4),

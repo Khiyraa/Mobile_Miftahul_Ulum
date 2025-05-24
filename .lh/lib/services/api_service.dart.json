@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/services/api_service.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1747961074334,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1748055645836,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,32 @@\n+// services/api.dart\r\n+import 'dart:convert';\r\n+import 'dart:io';\r\n+import 'package:flutter/foundation.dart'; // untuk kIsWeb\r\n+import 'package:http/http.dart' as http;\r\n+\r\n+String getBaseUrl() {\r\n+  if (kIsWeb) {\r\n+    return 'http://127.0.0.1:8000'; // Web akses langsung ke localhost\r\n+  } else if (Platform.isAndroid) {\r\n+    return 'http://10.0.2.2:8000'; // Emulator Android harus pakai IP ini\r\n+  } else {\r\n+    return 'http://127.0.0.1:8000'; // iOS simulator atau lainnya\r\n+  }\r\n+}\r\n+\r\n+Future<Map<String, dynamic>> loginUser(String email, String password) async {\r\n+  final baseUrl = getBaseUrl();\r\n+  final url = Uri.parse('$baseUrl/api/login');\r\n+\r\n+  final response = await http.post(\r\n+    url,\r\n+    headers: {'Content-Type': 'application/json'},\r\n+    body: jsonEncode({'email': email, 'password': password}),\r\n+  );\r\n+\r\n+  if (response.statusCode == 200) {\r\n+    return jsonDecode(response.body);\r\n+  } else {\r\n+    throw Exception('Login gagal: ${response.body}');\r\n+  }\r\n+}\r\n"
+                }
+            ],
+            "date": 1747961074334,
+            "name": "Commit-0",
+            "content": "\r\n// services/api.dart\r\nimport 'dart:convert';\r\nimport 'package:http/http.dart' as http;\r\n\r\nFuture<Map<String, dynamic>> loginUser(String email, String password) async {\r\n  final url = Uri.parse('http://127.0.0.1:8000/api/login');\r\n\r\n  final response = await http.post(\r\n    url,\r\n    headers: {'Content-Type': 'application/json'},\r\n    body: jsonEncode({'email': email, 'password': password}),\r\n  );\r\n\r\n  if (response.statusCode == 200) {\r\n    return jsonDecode(response.body);\r\n  } else {\r\n    throw Exception('Login gagal: ${response.body}');\r\n  }\r\n}\r\n"
+        }
+    ]
+}

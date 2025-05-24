@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/screens/lib/services/api_service.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1747961161465,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1747961161465,
+            "name": "Commit-0",
+            "content": "// TODO Implement this library."
+        }
+    ]
+}

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
+import '../services/api_service.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: LoginScreen(),
-  ));
+  runApp(MaterialApp(home: LoginScreen()));
 }
 
 class LoginScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Background Hijau 
+            // Background Hijau
             Container(
               width: double.infinity,
               height: 200,
@@ -109,7 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureText ? Icons.visibility : Icons.visibility_off,
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -132,12 +134,40 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
-                        );
+                      onPressed: () async {
+                        final email = emailController.text;
+                        final password = passwordController.text;
+
+                        try {
+                          final response = await loginUser(email, password);
+                          // Contoh: Jika response memiliki key 'token' sebagai tanda berhasil login
+                          if (response.containsKey('token')) {
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            await prefs.setBool('isLoggedIn', true);
+                            await prefs.setString('token', response['token']);
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomeScreen(),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Login gagal: ${response['message'] ?? 'Periksa kredensial Anda'}',
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Terjadi kesalahan: $e')),
+                          );
+                        }
                       },
+
                       child: const Text(
                         "Masuk",
                         style: TextStyle(fontSize: 16, color: Colors.white),

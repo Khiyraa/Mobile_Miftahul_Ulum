@@ -47,7 +47,7 @@ class HomeContent extends StatelessWidget {
             // Row untuk Prestasi dan Kesehatan
             Row(
               children: [
-                Expanded(child: PrestasiCard()),
+                // Expanded(child: PrestasiCard()),
                 SizedBox(width: 12),
                 Expanded(child: KesehatanCard()),
               ],
