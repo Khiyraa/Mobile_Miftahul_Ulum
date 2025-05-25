@@ -31,22 +31,28 @@ Future<Map<String, dynamic>> loginUser(String email, String password) async {
   }
 }
 
-Future<Map<String, dynamic>> fetchUserData(String token) async {
-  final baseUrl = getBaseUrl();
-  final url = Uri.parse('$baseUrl/api/user');
-
-  final response = await http.get(
-    url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
+Future<Map<String, dynamic>> resetPasswordAPI(
+  String email,
+  String newPassword,
+) async {
+  final response = await http.post(
+    Uri.parse(
+      'http://127.0.0.1:8000/api/reset-password',
+    ), // ganti jika pakai IP device
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'email': email,
+      'new_password': newPassword,
+      'new_password_confirmation': newPassword, // tambahkan ini
+    }),
   );
 
   if (response.statusCode == 200) {
     return jsonDecode(response.body);
   } else {
-    throw Exception('Gagal mengambil data user: ${response.body}');
+    return {
+      'success': false,
+      'message': jsonDecode(response.body)['message'] ?? 'Gagal reset password',
+    };
   }
 }
-
