@@ -30,3 +30,29 @@ Future<Map<String, dynamic>> loginUser(String email, String password) async {
     throw Exception('Login gagal: ${response.body}');
   }
 }
+
+Future<Map<String, dynamic>> resetPasswordAPI(
+  String email,
+  String newPassword,
+) async {
+  final response = await http.post(
+    Uri.parse(
+      'http://127.0.0.1:8000/api/reset-password',
+    ), // ganti jika pakai IP device
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'email': email,
+      'new_password': newPassword,
+      'new_password_confirmation': newPassword, // tambahkan ini
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    return {
+      'success': false,
+      'message': jsonDecode(response.body)['message'] ?? 'Gagal reset password',
+    };
+  }
+}
