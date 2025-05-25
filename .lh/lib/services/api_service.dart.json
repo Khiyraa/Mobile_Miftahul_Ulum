@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1747961074334,
@@ -16,6 +16,14 @@
                 {
                     "date": 1748058757968,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -30,23 +30,23 @@\n     throw Exception('Login gagal: ${response.body}');\r\n   }\r\n }\r\n \r\n-// services/api.dart\r\n-import 'dart:convert';\r\n-import 'package:http/http.dart' as http;\r\n+Future<Map<String, dynamic>> fetchUserData(String token) async {\r\n+  final baseUrl = getBaseUrl();\r\n+  final url = Uri.parse('$baseUrl/api/user');\r\n \r\n-Future<Map<String, dynamic>> loginUser(String email, String password) async {\r\n-  final url = Uri.parse('http://127.0.0.1:8000/api/login');\r\n-\r\n-  final response = await http.post(\r\n+  final response = await http.get(\r\n     url,\r\n-    headers: {'Content-Type': 'application/json'},\r\n-    body: jsonEncode({'email': email, 'password': password}),\r\n+    headers: {\r\n+      'Content-Type': 'application/json',\r\n+      'Authorization': 'Bearer $token',\r\n+    },\r\n   );\r\n \r\n   if (response.statusCode == 200) {\r\n     return jsonDecode(response.body);\r\n   } else {\r\n-    throw Exception('Login gagal: ${response.body}');\r\n+    throw Exception('Gagal mengambil data user: ${response.body}');\r\n   }\r\n }\r\n+\r\n"
+                },
+                {
+                    "date": 1748201085571,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -30,23 +30,29 @@\n     throw Exception('Login gagal: ${response.body}');\r\n   }\r\n }\r\n \r\n-Future<Map<String, dynamic>> fetchUserData(String token) async {\r\n-  final baseUrl = getBaseUrl();\r\n-  final url = Uri.parse('$baseUrl/api/user');\r\n-\r\n-  final response = await http.get(\r\n-    url,\r\n-    headers: {\r\n-      'Content-Type': 'application/json',\r\n-      'Authorization': 'Bearer $token',\r\n-    },\r\n+Future<Map<String, dynamic>> resetPasswordAPI(\r\n+  String email,\r\n+  String newPassword,\r\n+) async {\r\n+  final response = await http.post(\r\n+    Uri.parse(\r\n+      'http://127.0.0.1:8000/api/reset-password',\r\n+    ), // ganti jika pakai IP device\r\n+    headers: {'Content-Type': 'application/json'},\r\n+    body: jsonEncode({\r\n+      'email': email,\r\n+      'new_password': newPassword,\r\n+      'new_password_confirmation': newPassword, // tambahkan ini\r\n+    }),\r\n   );\r\n \r\n   if (response.statusCode == 200) {\r\n     return jsonDecode(response.body);\r\n   } else {\r\n-    throw Exception('Gagal mengambil data user: ${response.body}');\r\n+    return {\r\n+      'success': false,\r\n+      'message': jsonDecode(response.body)['message'] ?? 'Gagal reset password',\r\n+    };\r\n   }\r\n-}\r\n-\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1748201213799,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -30,29 +30,23 @@\n     throw Exception('Login gagal: ${response.body}');\r\n   }\r\n }\r\n \r\n-Future<Map<String, dynamic>> resetPasswordAPI(\r\n-  String email,\r\n-  String newPassword,\r\n-) async {\r\n-  final response = await http.post(\r\n-    Uri.parse(\r\n-      'http://127.0.0.1:8000/api/reset-password',\r\n-    ), // ganti jika pakai IP device\r\n-    headers: {'Content-Type': 'application/json'},\r\n-    body: jsonEncode({\r\n-      'email': email,\r\n-      'new_password': newPassword,\r\n-      'new_password_confirmation': newPassword, // tambahkan ini\r\n-    }),\r\n+Future<Map<String, dynamic>> fetchUserData(String token) async {\r\n+  final baseUrl = getBaseUrl();\r\n+  final url = Uri.parse('$baseUrl/api/user');\r\n+\r\n+  final response = await http.get(\r\n+    url,\r\n+    headers: {\r\n+      'Content-Type': 'application/json',\r\n+      'Authorization': 'Bearer $token',\r\n+    },\r\n   );\r\n\\ No newline at end of file\n \r\n   if (response.statusCode == 200) {\r\n     return jsonDecode(response.body);\r\n   } else {\r\n-    return {\r\n-      'success': false,\r\n-      'message': jsonDecode(response.body)['message'] ?? 'Gagal reset password',\r\n-    };\r\n+    throw Exception('Gagal mengambil data user: ${response.body}');\r\n   }\r\n-}\n+}\r\n+\r\n"
                 }
             ],
             "date": 1747961074334,
