@@ -4,7 +4,8 @@ import 'home_content.dart';
 import 'faq_form.dart'; // Import FaqForm
 import '../navbar/custom_bottom_navbar.dart';
 import '../navbar/nav_item.dart';
-// Import halaman chat admin (pastikan file ini dibuat)
+import '../services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,68 +15,81 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentPage = 1; // Mulai dengan Home terpilih
+  int _currentPage = 1;
 
-  // Simpan semua halaman dalam variabel agar tidak hilang saat berpindah
   late final Widget _jadwalShalatPage = const JadwalShalatPage();
   late final Widget _homePage = const HomeContent();
-  late final Widget _faqPage = const FaqForm(); // Ganti dengan FaqForm
 
-  // Bangun NavItems menggunakan halaman yang sudah dibuat
-  late final List<NavItem> _navItems;
+  Future<Map<String, dynamic>>? _akunFuture;
 
   @override
   void initState() {
     super.initState();
-    _navItems = [
-      NavItem(
-        label: 'Santri',
-        icon: Icons.calendar_today,
-        page: JadwalShalatPage(),
-      ),
-      NavItem(label: 'Home', icon: Icons.home, page: _homePage),
-      NavItem(
-        label: 'Pengumuman',
-        icon: Icons.chat_bubble_outline,
-        page: _faqPage,
-      ),
-    ];
+    _akunFuture = _loadUserData();
   }
 
-  void _navigate(int index) {
-    setState(() {
-      _currentPage = index;
-    });
+  Future<Map<String, dynamic>> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) {
+      throw Exception('Token tidak ditemukan, user belum login');
+    }
+
+    final userData = await fetchUserData(token);
+    return userData;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard Santri')),
-      body: IndexedStack(
-        index: _currentPage,
-        children: [_jadwalShalatPage, _homePage, _faqPage],
-      ),
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _akunFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-      extendBody: true,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 0),
-        child: CustomBottomNavBar(
-          currentIndex: _currentPage,
-          items: _navItems,
-          onTap: _navigate,
-        ),
-      ),
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(child: Text('Error: ${snapshot.error}')),
+          );
+        }
+
+        final akun = snapshot.data!;
+        final faqPage = FaqForm(
+          userId: akun['id_akun'].toString(),
+          userName: akun['username'],
+        );
+
+        final navItems = [
+          NavItem(label: 'Santri', icon: Icons.calendar_today, page: _jadwalShalatPage),
+          NavItem(label: 'Home', icon: Icons.home, page: _homePage),
+          NavItem(label: 'Pengumuman', icon: Icons.chat_bubble_outline, page: faqPage),
+        ];
+
+        return Scaffold(
+          appBar: AppBar(title: const Text('Dashboard Santri')),
+          body: IndexedStack(
+            index: _currentPage,
+            children: [_jadwalShalatPage, _homePage, faqPage],
+          ),
+          extendBody: true,
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.only(bottom: 0),
+            child: CustomBottomNavBar(
+              currentIndex: _currentPage,
+              items: navItems,
+              onTap: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
+            ),
+          ),
+        );
+      },
     );
-  }
-}
-
-// Halaman dummy untuk navigasi
-class SantriPage extends StatelessWidget {
-  const SantriPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text('Jadwal Adzan'));
   }
 }

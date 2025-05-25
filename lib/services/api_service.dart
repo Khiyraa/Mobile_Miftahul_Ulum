@@ -30,3 +30,23 @@ Future<Map<String, dynamic>> loginUser(String email, String password) async {
     throw Exception('Login gagal: ${response.body}');
   }
 }
+
+Future<Map<String, dynamic>> fetchUserData(String token) async {
+  final baseUrl = getBaseUrl();
+  final url = Uri.parse('$baseUrl/api/user');
+
+  final response = await http.get(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception('Gagal mengambil data user: ${response.body}');
+  }
+}
+

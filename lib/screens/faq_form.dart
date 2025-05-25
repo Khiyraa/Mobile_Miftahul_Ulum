@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'chat_admin_screen.dart';
 
 class FaqForm extends StatefulWidget {
-  const FaqForm({super.key});
+  final String userId;
+  final String userName;
+
+  const FaqForm({super.key, required this.userId, required this.userName});
 
   @override
   State<FaqForm> createState() => _FaqFormState();
@@ -244,7 +247,13 @@ class _FaqFormState extends State<FaqForm> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const ChatScreen()),
+                    MaterialPageRoute(
+                      builder:
+                          (_) => ChatScreen(
+                            userId: widget.userId,
+                            userName: widget.userName,
+                          ),
+                    ),
                   );
                 },
               ),
