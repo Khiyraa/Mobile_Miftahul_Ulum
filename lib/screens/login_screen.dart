@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
+import '../services/api_service.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: LoginScreen(),
-  ));
+  runApp(MaterialApp(home: LoginScreen()));
 }
 
 class LoginScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Background Hijau 
+            // Background Hijau
             Container(
               width: double.infinity,
               height: 200,
@@ -109,7 +109,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureText ? Icons.visibility : Icons.visibility_off,
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -132,18 +134,57 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
-                        );
+                      onPressed: () async {
+                        final email = emailController.text;
+                        final password = passwordController.text;
+
+                        try {
+                          final response = await loginUser(email, password);
+                          // Contoh: Jika response memiliki key 'token' sebagai tanda berhasil login
+                          if (response.containsKey('token')) {
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            await prefs.setBool('isLoggedIn', true);
+                            await prefs.setString('token', response['token']);
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomeScreen(),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Login gagal: ${response['message'] ?? 'Periksa kredensial Anda'}',
+                                ),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Terjadi kesalahan: $e')),
+                          );
+                        }
                       },
+
                       child: const Text(
                         "Masuk",
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                   ),
+                  TextButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const ForgotPasswordDialog(),
+                      );
+                    },
+                    child: const Text("Lupa Password?"),
+                  ),
+
                   const SizedBox(height: 20),
                 ],
               ),
@@ -151,6 +192,115 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ForgotPasswordDialog extends StatefulWidget {
+  const ForgotPasswordDialog({super.key});
+
+  @override
+  State<ForgotPasswordDialog> createState() => _ForgotPasswordDialogState();
+}
+
+class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) return 'Password tidak boleh kosong';
+    if (value.length < 8) return 'Minimal 8 karakter';
+    if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d_]{8,}$').hasMatch(value)) {
+      return 'Gunakan huruf, angka, dan simbol _';
+    }
+    return null;
+  }
+
+  Future<void> resetPassword() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final email = emailController.text;
+    final newPassword = newPasswordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    if (newPassword != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Konfirmasi password tidak cocok')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await resetPasswordAPI(email, newPassword);
+      if (response['success'] == true) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password berhasil diubah')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? 'Gagal mengganti password'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $e')));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Reset Password'),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              validator: (value) => value!.isEmpty ? 'Masukkan email' : null,
+            ),
+            TextFormField(
+              controller: newPasswordController,
+              decoration: const InputDecoration(labelText: 'Password Baru'),
+              obscureText: true,
+              validator: validatePassword,
+            ),
+            TextFormField(
+              controller: confirmPasswordController,
+              decoration: const InputDecoration(
+                labelText: 'Konfirmasi Password',
+              ),
+              obscureText: true,
+              validator: validatePassword,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        if (_isLoading)
+          const CircularProgressIndicator()
+        else ...[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(onPressed: resetPassword, child: const Text('Kirim')),
+        ],
+      ],
     );
   }
 }

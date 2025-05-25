@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/screens/home_content.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1747964974283,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1747964974283,
+            "name": "Commit-0",
+            "content": "import 'package:flutter/material.dart';\r\nimport '../widgets/header_card.dart';\r\nimport '../widgets/disiplin_card.dart';\r\nimport '../widgets/ibadah_summary_card.dart';\r\nimport '../widgets/jadwal_harian_card.dart';\r\nimport '../widgets/prestasi_card.dart';\r\nimport '../widgets/kesehatan_card.dart';\r\nimport '../widgets/pengumuman_card.dart';\r\nimport '../widgets/quick_actions_card.dart';\r\n\r\nclass HomeContent extends StatelessWidget {\r\n  const HomeContent({super.key});\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return RefreshIndicator(\r\n      onRefresh: () async {\r\n        // Implementasi refresh data\r\n        await Future.delayed(const Duration(seconds: 2));\r\n      },\r\n      child: SingleChildScrollView(\r\n        padding: const EdgeInsets.all(16),\r\n        child: Column(\r\n          children: const [\r\n            // Header dengan info santri\r\n            HeaderCard(),\r\n            SizedBox(height: 16),\r\n\r\n            // Row untuk cards yang sejajar\r\n            Row(\r\n              children: [\r\n                Expanded(child: DisiplinCard()),\r\n                SizedBox(width: 12),\r\n                Expanded(child: IbadahSummaryCard()),\r\n              ],\r\n            ),\r\n            SizedBox(height: 16),\r\n\r\n            // Jadwal Harian\r\n            JadwalHarianCard(),\r\n            SizedBox(height: 16),\r\n\r\n            // Quick Actions\r\n            QuickActionsCard(),\r\n            SizedBox(height: 16),\r\n\r\n            // Row untuk Prestasi dan Kesehatan\r\n            Row(\r\n              children: [\r\n                // Expanded(child: PrestasiCard()),\r\n                SizedBox(width: 12),\r\n                Expanded(child: KesehatanCard()),\r\n              ],\r\n            ),\r\n            SizedBox(height: 16),\r\n\r\n            // Pengumuman\r\n            PengumumanCard(),\r\n            SizedBox(height: 80), // Extra space for bottom navigation\r\n          ],\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}

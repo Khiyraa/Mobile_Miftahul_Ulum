@@ -14,7 +14,7 @@ class JadwalShalatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => JadwalShalatCubit(JadwalShalatRepository()),
-      child: JadwalShalatView(),
+      child: const JadwalShalatView(),
     );
   }
 }
@@ -27,7 +27,7 @@ class JadwalShalatView extends StatefulWidget {
 }
 
 class _JadwalShalatViewState extends State<JadwalShalatView> {
-  String selectedCity = "Jakarta";
+  String selectedCity = "Jakarta Pusat";
   String selectedCountry = "Indonesia";
 
   @override
@@ -42,30 +42,54 @@ class _JadwalShalatViewState extends State<JadwalShalatView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Jadwal Shalat")),
-      body: Column(
-        children: [
-          TanggalCard(),
-          DropdownLokasi(
-            onCitySelected: (city) {
-              setState(() {
-                selectedCity = city;
-              });
-              context.read<JadwalShalatCubit>().getJadwalShalat(
-                selectedCity,
-                selectedCountry,
-              );
-            },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Tanggal Card with spacing
+                const TanggalCard(),
+                const SizedBox(height: 30),
+                
+                // Dropdown Lokasi with spacing
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: DropdownLokasi(
+                    onCitySelected: (city) {
+                      setState(() {
+                        selectedCity = city;
+                      });
+                      context.read<JadwalShalatCubit>().getJadwalShalat(
+                        selectedCity,
+                        selectedCountry,
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // Jadwal Card with BlocBuilder
+                BlocBuilder<JadwalShalatCubit, JadwalShalatModel?>(
+                  builder: (context, jadwal) {
+                    if (jadwal == null) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                    return JadwalCard(
+                      jadwal: jadwal, 
+                      namaDaerah: selectedCity,
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-          BlocBuilder<JadwalShalatCubit, JadwalShalatModel?>(
-            builder: (context, jadwal) {
-              if (jadwal == null) {
-                return Center(child: CircularProgressIndicator());
-              }
-              return JadwalCard(jadwal: jadwal, namaDaerah: selectedCity);
-            },
-          ),
-        ],
+        ),
       ),
     );
   }

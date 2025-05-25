@@ -67,7 +67,7 @@ class _HomeContentState extends State<HomeContent> {
 
             const Row(
               children: [
-                Expanded(child: PrestasiCard()),
+                // Expanded(child: PrestasiCard()),
                 SizedBox(width: 12),
                 Expanded(child: KesehatanCard()),
               ],
