@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:ably_flutter/ably_flutter.dart' as ably;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart';
 
 class AblyService {
   static final AblyService _instance = AblyService._internal();
@@ -24,8 +25,7 @@ class AblyService {
   // Getters for streams
   Stream<Map<String, dynamic>> get onMessage => _messageController.stream;
   Stream<bool> get onAdminStatusChange => _adminStatusController.stream;
-  Stream<bool> get onConnectionStatusChange =>
-      _connectionStatusController.stream;
+  Stream<bool> get onConnectionStatusChange => _connectionStatusController.stream;
 
   // Getters for properties
   bool get isConnected => _isConnected;
@@ -39,6 +39,9 @@ class AblyService {
     String? userName,
     String? customChannelName,
   }) async {
+    debugPrint('[AblyService] Initializing Ably...');
+    debugPrint('[AblyService] Using API Key: $apiKey');
+
     // Store user details
     _userId = userId ?? 'mobile-user-${_uuid.v4()}';
     _userName = userName ?? 'Orang Tua Santri';
@@ -78,7 +81,11 @@ class AblyService {
     await _realtime.connect();
 
     // Save user session
-    _saveUserSession();
+    await _saveUserSession();
+
+    debugPrint(
+      '[AblyService] Ably initialized successfully with userId: $_userId and channel: ${_channel.name}',
+    );
   }
 
   // Store user session
@@ -100,12 +107,15 @@ class AblyService {
   // Subscribe to channel messages
   void _subscribeToMessages() {
     _channel.subscribe().listen((ably.Message message) {
-      final data = message.data as Map<String, dynamic>;
+      final dataRaw = message.data;
+      if (dataRaw is Map) {
+        final Map<String, dynamic> data = Map<String, dynamic>.from(dataRaw);
 
-      // Only process messages not from self
-      if (data['senderId'] != _userId) {
-        // Add received message to stream
-        _messageController.add(data);
+        // Only process messages not from self
+        if (data['senderId'] != _userId) {
+          // Add received message to stream
+          _messageController.add(data);
+        }
       }
     });
   }
@@ -122,10 +132,12 @@ class AblyService {
     try {
       final presenceList = await _channel.presence.get();
       final adminOnline = presenceList.any((member) {
-        final data = member.data as Map<String, dynamic>?;
-        return data != null &&
-            data['isAdmin'] == true &&
-            data['status'] == 'online';
+        final dataRaw = member.data;
+        if (dataRaw is Map) {
+          final Map<String, dynamic> data = Map<String, dynamic>.from(dataRaw);
+          return data['isAdmin'] == true && data['status'] == 'online';
+        }
+        return false;
       });
 
       _adminStatusController.add(adminOnline);
@@ -175,31 +187,36 @@ class AblyService {
   }
 
   // Send a message
-  Future<Map<String, dynamic>> sendMessage(String text) async {
-    if (!_isConnected) {
-      throw Exception('Not connected to Ably');
+  Future<Map<String, dynamic>> sendMessage(String message) async {
+    if (_userId.isEmpty || _userName.isEmpty) {
+      print('Error: _userId or _userName is empty');
+      throw Exception('User not initialized');
     }
 
-    final messageId = _uuid.v4();
-    final timestamp = DateTime.now();
-
-    final message = {
-      'id': messageId,
-      'message': text,
-      'senderId': _userId,
-      'senderName': _userName,
-      'isAdmin': false,
-      'status': 'sent',
-      'time': timestamp.toIso8601String(),
-      'platform': 'mobile',
-    };
-
     try {
-      await _channel.publish(name: 'chat_message', data: message);
-      return message;
+      debugPrint('Sending message as $_userName ($_userId)');
+      await _channel.publish(
+        name: 'chat_message',
+        data: {
+          'message': message,
+          'senderId': _userId,
+          'senderName': _userName,
+          'timestamp': DateTime.now().toIso8601String(),
+        },
+      );
+
+      return {
+        'id': 'local-${DateTime.now().millisecondsSinceEpoch}',
+        'message': message,
+        'senderId': _userId,
+        'senderName': _userName,
+        'isAdmin': false,
+        'status': 'sent',
+        'time': DateTime.now().toIso8601String(),
+      };
     } catch (e) {
       print('Error sending message: $e');
-      return {...message, 'status': 'failed'};
+      rethrow;
     }
   }
 
@@ -207,16 +224,18 @@ class AblyService {
   Future<List<Map<String, dynamic>>> getMessageHistory() async {
     try {
       final history = await _channel.history();
-      final historyMessages =
-          history.items.map((message) {
-            final data = message.data as Map<String, dynamic>;
-            return data;
-          }).toList();
+      final historyMessages = history.items.map((message) {
+        final dataRaw = message.data;
+        if (dataRaw is Map) {
+          return Map<String, dynamic>.from(dataRaw);
+        }
+        return <String, dynamic>{};
+      }).toList();
 
       // Sort messages by time
       historyMessages.sort((a, b) {
-        final timeA = DateTime.parse(a['time'] as String);
-        final timeB = DateTime.parse(b['time'] as String);
+        final timeA = DateTime.tryParse(a['time'] ?? '') ?? DateTime(1970);
+        final timeB = DateTime.tryParse(b['time'] ?? '') ?? DateTime(1970);
         return timeA.compareTo(timeB);
       });
 

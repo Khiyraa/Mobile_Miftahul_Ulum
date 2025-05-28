@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/screens/home_screen.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1747951949600,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1747951949600,
+            "name": "Commit-0",
+            "content": "import 'package:flutter/material.dart';\r\nimport 'package:mobile_miftahul_ulum/screens/jadwal_shalat_page.dart';\r\nimport 'home_content.dart';\r\nimport 'faq_form.dart'; // Import FaqForm\r\nimport '../navbar/custom_bottom_navbar.dart';\r\nimport '../navbar/nav_item.dart';\r\n// Import halaman chat admin (pastikan file ini dibuat)\r\n\r\nclass HomeScreen extends StatefulWidget {\r\n  const HomeScreen({super.key});\r\n\r\n  @override\r\n  State<HomeScreen> createState() => _HomeScreenState();\r\n}\r\n\r\nclass _HomeScreenState extends State<HomeScreen> {\r\n  int _currentPage = 1; // Mulai dengan Home terpilih\r\n\r\n  // Simpan semua halaman dalam variabel agar tidak hilang saat berpindah\r\n  late final Widget _jadwalShalatPage = const JadwalShalatPage();\r\n  late final Widget _homePage = const HomeContent();\r\n  late final Widget _faqPage = const FaqForm(); // Ganti dengan FaqForm\r\n\r\n  // Bangun NavItems menggunakan halaman yang sudah dibuat\r\n  late final List<NavItem> _navItems;\r\n\r\n  @override\r\n  void initState() {\r\n    super.initState();\r\n    _navItems = [\r\n      NavItem(\r\n        label: 'Santri',\r\n        icon: Icons.calendar_today,\r\n        page: JadwalShalatPage(),\r\n      ),\r\n      NavItem(label: 'Home', icon: Icons.home, page: _homePage),\r\n      NavItem(\r\n        label: 'Pengumuman',\r\n        icon: Icons.chat_bubble_outline,\r\n        page: _faqPage,\r\n      ),\r\n    ];\r\n  }\r\n\r\n  void _navigate(int index) {\r\n    setState(() {\r\n      _currentPage = index;\r\n    });\r\n  }\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return Scaffold(\r\n      appBar: AppBar(title: const Text('Dashboard Santri')),\r\n      body: IndexedStack(\r\n        index: _currentPage,\r\n        children: [_jadwalShalatPage, _homePage, _faqPage],\r\n      ),\r\n\r\n      extendBody: true,\r\n      bottomNavigationBar: Padding(\r\n        padding: const EdgeInsets.only(bottom: 0),\r\n        child: CustomBottomNavBar(\r\n          currentIndex: _currentPage,\r\n          items: _navItems,\r\n          onTap: _navigate,\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n\r\n// Halaman dummy untuk navigasi\r\nclass SantriPage extends StatelessWidget {\r\n  const SantriPage({super.key});\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return const Center(child: Text('Jadwal Adzan'));\r\n  }\r\n}\r\n"
+        }
+    ]
+}

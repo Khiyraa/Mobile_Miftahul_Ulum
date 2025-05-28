@@ -244,7 +244,7 @@ class _FaqFormState extends State<FaqForm> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const ChatAdminScreen()),
+                    MaterialPageRoute(builder: (_) => const ChatScreen()),
                   );
                 },
               ),

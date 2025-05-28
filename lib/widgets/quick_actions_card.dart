@@ -13,12 +13,6 @@ class QuickActionsCard extends StatelessWidget {
         'color': const Color(0xFF4CAF50),
       },
       {
-        'title': 'Izin/Cuti',
-        'subtitle': 'Ajukan izin',
-        'icon': Icons.event_available,
-        'color': const Color(0xFF2196F3),
-      },
-      {
         'title': 'Laporan',
         'subtitle': 'Laporan bulanan',
         'icon': Icons.assessment,

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/main.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1747962955359,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1747962955359,
+            "name": "Commit-0",
+            "content": "import 'package:flutter/material.dart';\r\nimport 'package:shared_preferences/shared_preferences.dart';\r\nimport 'screens/login_screen.dart';\r\nimport 'screens/home_screen.dart'; // pastikan ini sesuai dengan lokasi file kamu\r\n\r\nvoid main() async {\r\n  WidgetsFlutterBinding.ensureInitialized(); // dibutuhkan untuk async sebelum runApp\r\n\r\n  SharedPreferences prefs = await SharedPreferences.getInstance();\r\n  bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;\r\n\r\n  runApp(MyApp(isLoggedIn: isLoggedIn));\r\n}\r\n\r\nclass MyApp extends StatelessWidget {\r\n  final bool isLoggedIn;\r\n\r\n  const MyApp({super.key, required this.isLoggedIn});\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return MaterialApp(\r\n      title: 'Miftahul Ulum',\r\n      theme: ThemeData(\r\n        primarySwatch: Colors.teal,\r\n        visualDensity: VisualDensity.adaptivePlatformDensity,\r\n      ),\r\n      home: isLoggedIn ? const HomeScreen() : const LoginScreen(),\r\n      debugShowCheckedModeBanner: false,\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}
