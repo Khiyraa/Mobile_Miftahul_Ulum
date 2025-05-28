@@ -47,7 +47,7 @@ class _HomeContentState extends State<HomeContent> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            HeaderCard(santriId: 'ST2018102'!),
+            HeaderCard(santriId: 'ST2018055'!),
             const SizedBox(height: 16),
 
             const Row(

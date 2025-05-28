@@ -65,7 +65,7 @@ Future<Map<String, dynamic>> resetPasswordAPI(
 
 class ApiService {
   // Ganti dengan URL API Laravel Anda
-  static const String baseUrl = 'http://192.168.1.17:8000/api';
+  static final String baseUrl = '${getBaseUrl()}/api';
 
   // Singleton pattern untuk memastikan hanya ada satu instance
   static final ApiService _instance = ApiService._internal();
