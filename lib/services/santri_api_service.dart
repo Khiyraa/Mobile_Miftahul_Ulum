@@ -1,14 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/santri.dart';
+import 'package:universal_io/io.dart';
 
 class ApiService {
-  // Ganti dengan URL Laravel API Anda
-  static const String baseUrl = 'http://192.168.1.17:8000/api';
+  static String getBaseUrl() {
+    if (Platform.isAndroid) {
+      return 'http://10.0.2.2:8000'; // Khusus Android emulator
+    } else if (Platform.isIOS) {
+      return 'http://localhost:8000'; // Untuk iOS simulator
+    } else {
+      return 'http://127.0.0.1:8000'; // Untuk Web / Desktop
+    }
+  }
 
-  // Untuk development lokal gunakan:
-  // static const String baseUrl = 'http://10.0.2.2:8000/api'; // Android Emulator
-  // static const String baseUrl = 'http://localhost:8000/api'; // iOS Simulator
+  static final String baseUrl = '${getBaseUrl()}/api';
 
   static const Map<String, String> _headers = {
     'Content-Type': 'application/json',
@@ -98,9 +104,7 @@ class ApiService {
   }
 
   // Get santri by orang tua ID
-  static Future<ApiResponse<List<Santri>>> getSantriByOrtuId(
-    String idOrtu,
-  ) async {
+  static Future<ApiResponse<List<Santri>>> getSantriByOrtuId(int idOrtu) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/santri/ortu/$idOrtu'),

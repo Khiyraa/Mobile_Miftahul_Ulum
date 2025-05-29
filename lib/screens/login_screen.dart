@@ -146,6 +146,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 await SharedPreferences.getInstance();
                             await prefs.setBool('isLoggedIn', true);
                             await prefs.setString('token', response['token']);
+                            await prefs.setString(
+                              'ortu_id',
+                              response['akun']['id_akun'].toString(),
+                            );
 
                             Navigator.pushReplacement(
                               context,
