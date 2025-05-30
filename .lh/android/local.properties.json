@@ -1,0 +1,26 @@
+{
+    "sourceFile": "android/local.properties",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1748052286424,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1748052686315,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,5 +2,5 @@\n flutter.sdk=C:\\\\src\\\\flutter\n flutter.buildMode=debug\n flutter.versionName=1.0.0\n flutter.versionCode=1\n-ndk.dir=C:\\\\Users\\\\NamaKamu\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\27.0.12077973\n+ndk.dir=C:\\Users\\aisya\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1748052779578,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,5 +2,5 @@\n flutter.sdk=C:\\\\src\\\\flutter\n flutter.buildMode=debug\n flutter.versionName=1.0.0\n flutter.versionCode=1\n-ndk.dir=C:\\Users\\aisya\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\n\\ No newline at end of file\n+ndk.dir=C:\\\\Users\\\\aisya\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\27.0.12077973\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1748052286424,
+            "name": "Commit-0",
+            "content": "sdk.dir=C:\\\\Users\\\\aisya\\\\AppData\\\\Local\\\\Android\\\\sdk\nflutter.sdk=C:\\\\src\\\\flutter\nflutter.buildMode=debug\nflutter.versionName=1.0.0\nflutter.versionCode=1\nndk.dir=C:\\\\Users\\\\NamaKamu\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\ndk\\\\27.0.12077973\n"
+        }
+    ]
+}
