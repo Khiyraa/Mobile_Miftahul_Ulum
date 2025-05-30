@@ -4,7 +4,6 @@ import '../widgets/header_card.dart';
 import '../widgets/disiplin_card.dart';
 import '../widgets/ibadah_summary_card.dart';
 import '../widgets/jadwal_harian_card.dart';
-import '../widgets/prestasi_card.dart';
 import '../widgets/kesehatan_card.dart';
 import '../widgets/pengumuman_card.dart';
 import '../widgets/quick_actions_card.dart';
@@ -47,7 +46,7 @@ class _HomeContentState extends State<HomeContent> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            HeaderCard(santriId: 'ST2018055'!),
+            HeaderCard(santriId: 'ST2018055'),
             const SizedBox(height: 16),
 
             const Row(
