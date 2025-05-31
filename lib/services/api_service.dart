@@ -74,9 +74,9 @@ class ApiService {
 
   // Headers default untuk request
   Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
 
   // Method untuk mengambil data pengumuman
   Future<List<PengumumanModel>> getPengumuman() async {
