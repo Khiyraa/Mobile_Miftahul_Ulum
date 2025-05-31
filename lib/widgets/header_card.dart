@@ -6,8 +6,15 @@ import '../services/santri_api_service.dart';
 
 class HeaderCard extends StatefulWidget {
   final String? santriId;
+  final List<Santri>? santriList;
+  final Function(String)? onSantriChanged;
 
-  const HeaderCard({super.key, this.santriId});
+  const HeaderCard({
+    super.key,
+    this.santriId,
+    this.santriList,
+    this.onSantriChanged,
+  });
 
   @override
   State<HeaderCard> createState() => _HeaderCardState();
@@ -18,11 +25,22 @@ class _HeaderCardState extends State<HeaderCard> {
   bool isLoading = true;
   String? errorMessage;
   bool isLocaleInitialized = false;
+  String? selectedSantriId;
 
   @override
   void initState() {
     super.initState();
+    selectedSantriId = widget.santriId;
     _initializeLocaleAndLoadData();
+  }
+
+  @override
+  void didUpdateWidget(HeaderCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.santriId != widget.santriId) {
+      selectedSantriId = widget.santriId;
+      _loadSantriData();
+    }
   }
 
   Future<void> _initializeLocaleAndLoadData() async {
@@ -34,7 +52,7 @@ class _HeaderCardState extends State<HeaderCard> {
   }
 
   Future<void> _loadSantriData() async {
-    if (!isLocaleInitialized || widget.santriId == null) return;
+    if (!isLocaleInitialized || selectedSantriId == null) return;
 
     setState(() {
       isLoading = true;
@@ -42,7 +60,7 @@ class _HeaderCardState extends State<HeaderCard> {
     });
 
     try {
-      final response = await ApiService.getSantriById(widget.santriId!);
+      final response = await ApiService.getSantriById(selectedSantriId!);
 
       if (response.success && response.data != null) {
         setState(() {
@@ -69,14 +87,14 @@ class _HeaderCardState extends State<HeaderCard> {
     return formatter.format(now);
   }
 
-  String _getKelasInfo() {
-    if (santri?.tahunAngkatan != null) {
-      final currentYear = DateTime.now().year;
-      final angkatan = int.tryParse(santri!.tahunAngkatan) ?? currentYear;
-      final kelas = currentYear - angkatan + 1;
-      return 'Kelas $kelas';
+  void _onSantriDropdownChanged(String? newSantriId) {
+    if (newSantriId != null && newSantriId != selectedSantriId) {
+      setState(() {
+        selectedSantriId = newSantriId;
+      });
+      widget.onSantriChanged?.call(newSantriId);
+      _loadSantriData();
     }
-    return '-';
   }
 
   @override
@@ -182,7 +200,7 @@ class _HeaderCardState extends State<HeaderCard> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    '${_getKelasInfo()} - ${santri!.idSantri}',
+                    'Angkatan ${santri!.tahunAngkatan} - ${santri!.idSantri}',
                     style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                   if (santri!.status.isNotEmpty)
@@ -223,6 +241,103 @@ class _HeaderCardState extends State<HeaderCard> {
             ),
           ],
         ),
+
+        // Dropdown untuk multiple santri - letakkan di bawah foto profil
+        if (widget.santriList != null && widget.santriList!.length > 1) ...[
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: selectedSantriId,
+                isExpanded: true,
+                icon: const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.white,
+                ),
+                dropdownColor: const Color(0xFF1D7A81),
+                style: const TextStyle(color: Colors.white),
+                items:
+                    widget.santriList!.map((santri) {
+                      return DropdownMenuItem<String>(
+                        value: santri.idSantri,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: const Icon(
+                                  Icons.person,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      santri.nama,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      'ID: ${santri.idSantri}',
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (santri.idSantri == selectedSantriId)
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                onChanged: _onSantriDropdownChanged,
+                hint: const Row(
+                  children: [
+                    Icon(Icons.people, color: Colors.white70, size: 16),
+                    SizedBox(width: 8),
+                    Text(
+                      'Pilih Santri',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

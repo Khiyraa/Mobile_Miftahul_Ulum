@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/chat_admin_screen.dart'; // Import ChatScreen
 
 class QuickActionsCard extends StatelessWidget {
   const QuickActionsCard({super.key});
@@ -7,16 +8,29 @@ class QuickActionsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> actions = [
       {
-        'title': 'Komunikasi',
+        'title': 'Live Chat',
         'subtitle': 'Chat dengan Ustadz',
         'icon': Icons.chat,
         'color': const Color(0xFF4CAF50),
+        'onTap': () {
+          // Navigate to ChatScreen
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ChatScreen()),
+          );
+        },
       },
       {
         'title': 'Laporan',
         'subtitle': 'Laporan bulanan',
         'icon': Icons.assessment,
         'color': const Color(0xFFFF9800),
+        'onTap': () {
+          // Handle laporan tap - bisa ditambahkan navigasi ke halaman laporan
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Fitur Laporan akan segera tersedia')),
+          );
+        },
       },
     ];
 
@@ -46,9 +60,8 @@ class QuickActionsCard extends StatelessWidget {
               itemBuilder: (context, index) {
                 final action = actions[index];
                 return InkWell(
-                  onTap: () {
-                    // Handle tap
-                  },
+                  onTap:
+                      action['onTap'], // Use the onTap function from the action
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     padding: const EdgeInsets.all(12),
