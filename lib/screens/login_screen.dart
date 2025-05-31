@@ -140,17 +140,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         try {
                           final response = await loginUser(email, password);
-                          // Contoh: Jika response memiliki key 'token' sebagai tanda berhasil login
+
                           if (response.containsKey('token')) {
                             SharedPreferences prefs =
                                 await SharedPreferences.getInstance();
+
+                            // Simpan data login
                             await prefs.setBool('isLoggedIn', true);
                             await prefs.setString('token', response['token']);
+
+                            // Simpan data akun
+                            final akun = response['akun'];
+                            await prefs.setInt('id_akun', akun['id_akun']);
+                            await prefs.setString('email', akun['email']);
+                            await prefs.setString('username', akun['username']);
                             await prefs.setString(
-                              'ortu_id',
-                              response['akun']['id_akun'].toString(),
+                              'hak_akses',
+                              akun['hak_akses'],
                             );
 
+                            // Navigasi ke Home
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

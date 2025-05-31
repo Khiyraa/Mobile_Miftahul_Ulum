@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'chat_admin_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../models/current_user.dart';
+import '../services/ably_service.dart';
 
 class FaqForm extends StatefulWidget {
   const FaqForm({super.key});
@@ -12,6 +16,8 @@ class _FaqFormState extends State<FaqForm> {
   String selectedCategory = 'Semua';
   TextEditingController searchController = TextEditingController();
   String searchQuery = '';
+  late final CurrentUser _currentUser = CurrentUser();
+  late final AblyService _ablyService = AblyService();
 
   final Map<String, List<Map<String, dynamic>>> faqData = {
     'Umum': [
@@ -53,6 +59,19 @@ class _FaqFormState extends State<FaqForm> {
     ],
   };
 
+  @override
+  void initState() {
+    super.initState();
+    _initializeUserData();
+  }
+
+  Future<void> _initializeUserData() async {
+    await _currentUser.initFromSharedPrefs();
+    debugPrint('FAQ Form - Current User Data:');
+    debugPrint('akunId: ${_currentUser.idAkun}');
+    debugPrint('token: ${_currentUser.token}');
+  }
+
   List<Map<String, dynamic>> getVisibleFaqs() {
     if (selectedCategory == 'Semua') {
       List<Map<String, dynamic>> allFaqs = [];
@@ -89,11 +108,7 @@ class _FaqFormState extends State<FaqForm> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         padding: const EdgeInsets.symmetric(horizontal: 16),
       ),
-      onPressed: () {
-        setState(() {
-          selectedCategory = label;
-        });
-      },
+      onPressed: () => setState(() => selectedCategory = label),
       icon: Icon(icon, size: 18),
       label: Text(label),
     );
@@ -108,7 +123,6 @@ class _FaqFormState extends State<FaqForm> {
       body: SafeArea(
         child: Column(
           children: [
-            // Informational banner
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
@@ -130,7 +144,6 @@ class _FaqFormState extends State<FaqForm> {
               ),
             ),
 
-            // Search field
             Padding(
               padding: const EdgeInsets.all(16),
               child: TextField(
@@ -159,7 +172,6 @@ class _FaqFormState extends State<FaqForm> {
               ),
             ),
 
-            // Category selector
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -176,7 +188,6 @@ class _FaqFormState extends State<FaqForm> {
 
             const SizedBox(height: 10),
 
-            // FAQ list
             Expanded(
               child:
                   faqs.isEmpty
@@ -227,7 +238,6 @@ class _FaqFormState extends State<FaqForm> {
                       ),
             ),
 
-            // Button to go to chat
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
@@ -241,11 +251,54 @@ class _FaqFormState extends State<FaqForm> {
                 ),
                 icon: const Icon(Icons.chat),
                 label: const Text("Chat Pengurus Pondok"),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ChatScreen()),
-                  );
+                onPressed: () async {
+                  try {
+                    final token =
+                        await _currentUser
+                            .token; // pastikan kamu punya fungsi ini
+                    final idOrtu = _currentUser.idAkun;
+
+                    if (token == null || idOrtu == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Token atau ID akun tidak tersedia.'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    final idSession = await _ablyService.getOrCreateSession(
+                      idStaf: 1, // selalu 1
+                      idOrtu: idOrtu,
+                      token: token,
+                    );
+
+                    if (idSession != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => ChatScreen(
+                                idStaf: 1,
+                                idOrtu: idOrtu,
+                                role: 'orang_tua',
+                              ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Gagal membuat sesi chat. Pastikan Anda sudah login dan memiliki akses.',
+                          ),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: ${e.toString()}')),
+                    );
+                  }
                 },
               ),
             ),

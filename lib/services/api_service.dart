@@ -1,5 +1,3 @@
-// gabungan_api_service.dart
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart'; // untuk kIsWeb
@@ -9,13 +7,8 @@ import 'package:flutter/material.dart';
 // ======================= BAGIAN KEDUA: Fungsi Umum =======================
 
 String getBaseUrl() {
-  if (kIsWeb) {
-    return 'http://127.0.0.1:8000'; // Web akses langsung ke localhost
-  } else if (Platform.isAndroid) {
-    return 'http://10.0.2.2:8000'; // Emulator Android harus pakai IP ini
-  } else {
-    return 'http://127.0.0.1:8000'; // iOS simulator atau lainnya
-  }
+  // Karena Anda ingin selalu pakai base URL yang tetap ini, kita override semua kondisi:
+  return 'https://webfw23.myhost.id/gol_d1/miftahul-ulum';
 }
 
 Future<Map<String, dynamic>> loginUser(String email, String password) async {
@@ -39,10 +32,12 @@ Future<Map<String, dynamic>> resetPasswordAPI(
   String email,
   String newPassword,
 ) async {
+  final url = Uri.parse(
+    'https://webfw23.myhost.id/gol_d1/miftahul-ulum/api/reset-password',
+  );
+
   final response = await http.post(
-    Uri.parse(
-      'http://127.0.0.1:8000/api/reset-password',
-    ), // ganti jika pakai IP device
+    url,
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode({
       'email': email,
@@ -64,8 +59,8 @@ Future<Map<String, dynamic>> resetPasswordAPI(
 // ======================= BAGIAN PERTAMA: ApiService & Model =======================
 
 class ApiService {
-  // Ganti dengan URL API Laravel Anda
-  static final String baseUrl = '${getBaseUrl()}/api';
+  // Base URL API yang baru
+  static final String baseUrl = 'https://webfw23.myhost.id/gol_d1/miftahul-ulum/api';
 
   // Singleton pattern untuk memastikan hanya ada satu instance
   static final ApiService _instance = ApiService._internal();
@@ -240,7 +235,8 @@ extension PengumumanModelExtension on PengumumanModel {
       print('Foto kosong, pakai placeholder');
       return 'https://via.placeholder.com/150';
     }
-    final url = 'http://192.168.1.17:8000/storage/$foto';
+    // Ganti base URL storage juga
+    final url = 'https://webfw23.myhost.id/gol_d1/miftahul-ulum/storage/$foto';
     print('URL foto: $url');
     return url;
   }

@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1747962955359,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1748625579117,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,32 +1,31 @@\n import 'package:flutter/material.dart';\r\n import 'package:shared_preferences/shared_preferences.dart';\r\n+import 'models/current_user.dart';\r\n import 'screens/login_screen.dart';\r\n-import 'screens/home_screen.dart'; // pastikan ini sesuai dengan lokasi file kamu\r\n+import 'screens/home_screen.dart';\r\n \r\n void main() async {\r\n-  WidgetsFlutterBinding.ensureInitialized(); // dibutuhkan untuk async sebelum runApp\r\n+  WidgetsFlutterBinding.ensureInitialized();\r\n+  \r\n+  // Initialize current user\r\n+  await CurrentUser().initFromSharedPrefs();\r\n \r\n-  SharedPreferences prefs = await SharedPreferences.getInstance();\r\n-  bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;\r\n-\r\n-  runApp(MyApp(isLoggedIn: isLoggedIn));\r\n+  runApp(const MyApp());\r\n }\r\n \r\n class MyApp extends StatelessWidget {\r\n-  final bool isLoggedIn;\r\n+  const MyApp({super.key});\r\n \r\n-  const MyApp({super.key, required this.isLoggedIn});\r\n-\r\n   @override\r\n   Widget build(BuildContext context) {\r\n     return MaterialApp(\r\n       title: 'Miftahul Ulum',\r\n       theme: ThemeData(\r\n         primarySwatch: Colors.teal,\r\n         visualDensity: VisualDensity.adaptivePlatformDensity,\r\n       ),\r\n-      home: isLoggedIn ? const HomeScreen() : const LoginScreen(),\r\n+      home: CurrentUser().isLoggedIn ? const HomeScreen() : const LoginScreen(),\r\n       debugShowCheckedModeBanner: false,\r\n     );\r\n   }\r\n-}\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1748627575237,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,16 +1,12 @@\n import 'package:flutter/material.dart';\r\n-import 'package:shared_preferences/shared_preferences.dart';\r\n-import 'models/current_user.dart';\r\n-import 'screens/login_screen.dart';\r\n-import 'screens/home_screen.dart';\r\n+import 'package:mobile_miftahul_ulum/models/current_user.dart';\r\n+import 'package:mobile_miftahul_ulum/screens/login_screen.dart';\r\n+import 'package:mobile_miftahul_ulum/screens/home_screen.dart';\r\n \r\n void main() async {\r\n   WidgetsFlutterBinding.ensureInitialized();\r\n-  \r\n-  // Initialize current user\r\n   await CurrentUser().initFromSharedPrefs();\r\n-\r\n   runApp(const MyApp());\r\n }\r\n \r\n class MyApp extends StatelessWidget {\r\n@@ -23,9 +19,13 @@\n       theme: ThemeData(\r\n         primarySwatch: Colors.teal,\r\n         visualDensity: VisualDensity.adaptivePlatformDensity,\r\n       ),\r\n-      home: CurrentUser().isLoggedIn ? const HomeScreen() : const LoginScreen(),\r\n+      initialRoute: CurrentUser().isLoggedIn ? '/home' : '/login',\r\n+      routes: {\r\n+        '/login': (context) => const LoginScreen(),\r\n+        '/home': (context) => const HomeScreen(),\r\n+      },\r\n       debugShowCheckedModeBanner: false,\r\n     );\r\n   }\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1747962955359,
