@@ -3,6 +3,7 @@ import 'chat_admin_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/current_user.dart';
+import '../services/ably_service.dart';
 
 class FaqForm extends StatefulWidget {
   const FaqForm({super.key});
@@ -16,6 +17,7 @@ class _FaqFormState extends State<FaqForm> {
   TextEditingController searchController = TextEditingController();
   String searchQuery = '';
   late final CurrentUser _currentUser = CurrentUser();
+  late final AblyService _ablyService = AblyService();
 
   final Map<String, List<Map<String, dynamic>>> faqData = {
     'Umum': [
@@ -94,78 +96,6 @@ class _FaqFormState extends State<FaqForm> {
                 ) ||
                 faq['answer'].toLowerCase().contains(searchQuery.toLowerCase());
           }).toList();
-    }
-  }
-
-  Future<int?> getOrCreateSession() async {
-    await _currentUser.initFromSharedPrefs();
-    final akunId = _currentUser.idAkun;
-    final token = _currentUser.token;
-
-    debugPrint('Attempting to get/create session for akunId: $akunId');
-
-    if (akunId == null || token == null) {
-      debugPrint('Error: akunId or token is null');
-      return null;
-    }
-
-    final url = Uri.parse(
-      'https://webfw23.myhost.id/gol_d1/miftahul-ulum/api/get-or-create-session',
-    );
-
-    debugPrint('Using token: $token');
-    debugPrint('Full URL: ${url.toString()}');
-
-    try {
-      final client = http.Client();
-      final response = await client
-          .post(
-            url,
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token',
-            },
-            body: jsonEncode({'id_ortu': akunId}),
-          )
-          .timeout(const Duration(seconds: 10));
-
-      debugPrint(
-        'Session API Response: ${response.statusCode} - ${response.body}',
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['id_session'] as int?;
-      } else if (response.statusCode == 302) {
-        // Handle redirect
-        final redirectUrl = response.headers['location'];
-        debugPrint('Redirecting to: $redirectUrl');
-
-        if (redirectUrl != null) {
-          final redirectResponse = await client.post(
-            Uri.parse(redirectUrl),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token',
-            },
-            body: jsonEncode({'akunId': akunId}),
-          );
-
-          if (redirectResponse.statusCode == 200) {
-            final data = jsonDecode(redirectResponse.body);
-            return data['idSession'] as int?;
-          }
-        }
-
-        debugPrint('Failed to follow redirect');
-        return null;
-      } else {
-        debugPrint('Failed to create session: ${response.statusCode}');
-        return null;
-      }
-    } catch (e) {
-      debugPrint('Error creating session: $e');
-      return null;
     }
   }
 
@@ -323,15 +253,35 @@ class _FaqFormState extends State<FaqForm> {
                 label: const Text("Chat Pengurus Pondok"),
                 onPressed: () async {
                   try {
-                    final idSession = await getOrCreateSession();
-                    if (idSession != null && _currentUser.idAkun != null) {
+                    final token =
+                        await _currentUser
+                            .token; // pastikan kamu punya fungsi ini
+                    final idOrtu = _currentUser.idAkun;
+
+                    if (token == null || idOrtu == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Token atau ID akun tidak tersedia.'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    final idSession = await _ablyService.getOrCreateSession(
+                      idStaf: 1, // selalu 1
+                      idOrtu: idOrtu,
+                      token: token,
+                    );
+
+                    if (idSession != null) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder:
                               (_) => ChatScreen(
-                                idSession: idSession,
-                                pengirim: _currentUser.idAkun!,
+                                idStaf: 1,
+                                idOrtu: idOrtu,
+                                role: 'orang_tua',
                               ),
                         ),
                       );

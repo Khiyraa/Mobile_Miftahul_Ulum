@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import '../services/ably_service.dart';
+import '../models/current_user.dart';
 
 class ChatScreen extends StatefulWidget {
-  final int idSession;
-  final int pengirim;
+  final int idStaf;
+  final int idOrtu;
+  final String role; // 'staf' atau 'orang_tua'
 
   const ChatScreen({
     Key? key,
-    required this.idSession,
-    required this.pengirim,
+    required this.idStaf,
+    required this.idOrtu,
+    required this.role,
   }) : super(key: key);
 
   @override
@@ -22,28 +25,43 @@ class _ChatScreenState extends State<ChatScreen> {
 
   List<Map<String, dynamic>> _messages = [];
   bool _isLoading = true;
+  int? _sessionId;
 
   @override
   void initState() {
     super.initState();
-    _initChat();
+
+    final token = CurrentUser().token; // token dari login/session
+
+    _initChat(token!);
   }
 
-  Future<void> _initChat() async {
+  Future<void> _initChat(String token) async {
     await _ablyService.initialize();
 
-    // Load existing messages dari backend
-    final msgs = await _ablyService.getMessages(widget.idSession);
+    final sessionId = await _ablyService.getOrCreateSession(
+      idStaf: widget.idStaf,
+      idOrtu: widget.idOrtu,
+      token: token, // kirim token ke sini
+    );
+
+    if (sessionId == null) {
+      // Tangani error, misal show dialog atau snackbar
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Gagal membuat sesi chat.')));
+      return;
+    }
+
+    _sessionId = sessionId;
+
+    final msgs = await _ablyService.getMessages(sessionId);
     setState(() {
       _messages = msgs;
       _isLoading = false;
     });
 
-    // Listen pesan realtime dari Ably
     _ablyService.listenToMessages((message, pengirim) {
-      // Asumsikan setiap pesan punya id_session dan filter di backend sudah dilakukan
-      // Jika ingin filter di sini, bisa tambahkan logika filter
-
       setState(() {
         _messages.add({
           'pesan': message,
@@ -52,7 +70,6 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       });
 
-      // Scroll ke bawah otomatis saat pesan baru datang
       _scrollToBottom();
     });
   }
@@ -71,43 +88,43 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || _sessionId == null) return;
 
-    // Kirim pesan lewat AblyService
-    await _ablyService.sendMessage(
-      idSession: widget.idSession,
-      pesan: text,
-      pengirim: widget.pengirim.toString(),
-    );
+    try {
+      await _ablyService.sendMessage(
+        idSession: _sessionId!,
+        pesan: text,
+        pengirim: widget.role,
+      );
 
-    // Tambah pesan lokal supaya user langsung lihat (optional, bisa juga menunggu Ably push)
-    setState(() {
-      _messages.add({
-        'pesan': text,
-        'pengirim': widget.pengirim.toString(),
-        'created_at': DateTime.now().toIso8601String(),
+      setState(() {
+        _messages.add({
+          'pesan': text,
+          'pengirim': widget.role,
+          'created_at': DateTime.now().toIso8601String(),
+        });
+        _controller.clear();
       });
-      _controller.clear();
-    });
 
-    _scrollToBottom();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _scrollController.dispose();
-    super.dispose();
+      _scrollToBottom();
+    } catch (e) {
+      // Tambahkan penanganan error agar user tahu jika gagal mengirim pesan
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal mengirim pesan: $e')));
+    }
   }
 
   Widget _buildMessageItem(Map<String, dynamic> message) {
-    final bool isMine = message['pengirim'].toString() == widget.pengirim.toString();
+    final bool isMine = message['pengirim'] == widget.role;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         padding: const EdgeInsets.all(12),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.7,
+        ),
         decoration: BoxDecoration(
           color: isMine ? Colors.teal : Colors.grey.shade300,
           borderRadius: BorderRadius.circular(16),
@@ -121,25 +138,31 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chat Pengurus Pondok'),
-      ),
+      appBar: AppBar(title: const Text('Chat Pengurus Pondok')),
       body: Column(
         children: [
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(8),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      final message = _messages[index];
-                      return _buildMessageItem(message);
-                    },
-                  ),
+            child:
+                _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(8),
+                      itemCount: _messages.length,
+                      itemBuilder: (context, index) {
+                        final message = _messages[index];
+                        return _buildMessageItem(message);
+                      },
+                    ),
           ),
           SafeArea(
             child: Padding(

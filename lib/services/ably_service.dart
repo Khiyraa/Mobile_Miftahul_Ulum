@@ -17,7 +17,9 @@ class AblyService {
   // Inisialisasi Ably dan channel
   Future<void> initialize() async {
     realtime = ably.Realtime(
-      options: ably.ClientOptions(key: 'TZaB8g._BT4jQ:8BWttVcvWHL6GTZJGaIve9G90RLZCQXdtBqSfceGEGo'),
+      options: ably.ClientOptions(
+        key: 'TZaB8g._BT4jQ:8BWttVcvWHL6GTZJGaIve9G90RLZCQXdtBqSfceGEGo',
+      ),
     );
     channel = realtime.channels.get('pesantren-chat');
   }
@@ -48,7 +50,8 @@ class AblyService {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${CurrentUser().token}',
+        'Accept': 'application/json', // pastikan server balas JSON
+        'Authorization': 'Bearer ${CurrentUser().token}', // token auth
       },
       body: json.encode({
         'id_session': idSession,
@@ -79,6 +82,38 @@ class AblyService {
     } else {
       debugPrint('Gagal ambil pesan: ${response.body}');
       return [];
+    }
+  }
+
+  Future<int?> getOrCreateSession({
+    required int idStaf,
+    required int idOrtu,
+    required String token,
+  }) async {
+    final url = Uri.parse('$_baseUrl/get-or-create-session');
+
+    final payload = {'id_staf': idStaf, 'id_ortu': idOrtu};
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept':
+            'application/json', // 🟢 Tambahkan ini agar Laravel balas JSON!
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(payload),
+    );
+
+    debugPrint(
+      'Session API Response: ${response.statusCode} - ${response.body}',
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['id_session'];
+    } else {
+      return null;
     }
   }
 
