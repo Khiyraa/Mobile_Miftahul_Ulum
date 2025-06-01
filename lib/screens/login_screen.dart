@@ -500,7 +500,63 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                           borderRadius: BorderRadius.circular(16),
                                         ),
                                       ),
-                                      onPressed: _isLoading ? null : _handleLogin,
+                                      onPressed: _isLoading
+    ? null
+    : () async {
+        setState(() {
+          _isLoading = true;
+        });
+
+        final email = emailController.text;
+        final password = passwordController.text;
+
+        try {
+          final response = await loginUser(email, password);
+
+          if (response.containsKey('token')) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+
+            // Simpan data login
+            await prefs.setBool('isLoggedIn', true);
+            await prefs.setString('token', response['token']);
+
+            // Simpan data akun
+            final akun = response['akun'];
+            await prefs.setInt('id_akun', akun['id_akun']);
+            await prefs.setString('email', akun['email']);
+            await prefs.setString('username', akun['username']);
+            await prefs.setString('hak_akses', akun['hak_akses']);
+
+            // Navigasi ke Home
+            if (!mounted) return;
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeScreen(),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Login gagal: ${response['message'] ?? 'Periksa kredensial Anda'}',
+                ),
+              ),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Terjadi kesalahan: $e'),
+            ),
+          );
+        } finally {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      },
+
                                       child: _isLoading
                                           ? const SizedBox(
                                               height: 24,

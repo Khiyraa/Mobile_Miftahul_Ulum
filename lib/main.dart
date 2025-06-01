@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/login_screen.dart';
-import 'screens/home_screen.dart'; // pastikan ini sesuai dengan lokasi file kamu
+import 'package:mobile_miftahul_ulum/models/current_user.dart';
+import 'package:mobile_miftahul_ulum/screens/login_screen.dart';
+import 'package:mobile_miftahul_ulum/screens/home_screen.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // dibutuhkan untuk async sebelum runApp
-
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
-  runApp(MyApp(isLoggedIn: isLoggedIn));
+  WidgetsFlutterBinding.ensureInitialized();
+  await CurrentUser().initFromSharedPrefs();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final bool isLoggedIn;
-
-  const MyApp({super.key, required this.isLoggedIn});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +20,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: isLoggedIn ? const HomeScreen() : const LoginScreen(),
+      initialRoute: CurrentUser().isLoggedIn ? '/home' : '/login',
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }
