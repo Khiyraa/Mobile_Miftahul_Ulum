@@ -10,7 +10,7 @@ class ApiService {
     } else if (Platform.isIOS) {
       return 'http://localhost:8000'; // Untuk iOS simulator
     } else {
-      return 'http://127.0.0.1:8000'; // Untuk Web / Desktop
+      return 'http://192.168.1.8:8000/api'; // Untuk Web / Desktop
     }
   }
 

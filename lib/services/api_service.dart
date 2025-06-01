@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 String getBaseUrl() {
   // Karena Anda ingin selalu pakai base URL yang tetap ini, kita override semua kondisi:
-  return 'https://webfw23.myhost.id/gol_d1/miftahul-ulum';
+  return 'http://10.0.2.2:8000';
 }
 
 Future<Map<String, dynamic>> loginUser(String email, String password) async {

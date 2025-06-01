@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 30,
+            "activePatchIndex": 34,
             "patches": [
                 {
                     "date": 1748050746209,
@@ -128,6 +128,22 @@
                 {
                     "date": 1748689893275,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,9 +49,10 @@\n     final response = await http.post(\r\n       url,\r\n       headers: {\r\n         'Content-Type': 'application/json',\r\n-        'Authorization': 'Bearer ${CurrentUser().token}',\r\n+        'Accept': 'application/json', // pastikan server balas JSON\r\n+        'Authorization': 'Bearer ${CurrentUser().token}', // token auth\r\n       },\r\n       body: json.encode({\r\n         'id_session': idSession,\r\n         'pesan': pesan,\r\n"
+                },
+                {
+                    "date": 1748737809940,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n \r\n   late ably.Realtime realtime;\r\n   late ably.RealtimeChannel channel;\r\n \r\n-  final String _baseUrl = 'https://webfw23.myhost.id/gol_d1/miftahul-ulum/api';\r\n+  final String _baseUrl = 'http://127.0.0.1:8000/api';\r\n \r\n   // Inisialisasi Ably dan channel\r\n   Future<void> initialize() async {\r\n     realtime = ably.Realtime(\r\n"
+                },
+                {
+                    "date": 1748738456114,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n \r\n   late ably.Realtime realtime;\r\n   late ably.RealtimeChannel channel;\r\n \r\n-  final String _baseUrl = 'http://127.0.0.1:8000/api';\r\n+  final String _baseUrl = 'http://192.168.1.8:8000/api';\r\n \r\n   // Inisialisasi Ably dan channel\r\n   Future<void> initialize() async {\r\n     realtime = ably.Realtime(\r\n"
+                },
+                {
+                    "date": 1748741803416,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n \r\n   late ably.Realtime realtime;\r\n   late ably.RealtimeChannel channel;\r\n \r\n-  final String _baseUrl = 'http://192.168.1.8:8000/api';\r\n+  final String _baseUrl = 'http://127.0.0.1:8000/api';\r\n \r\n   // Inisialisasi Ably dan channel\r\n   Future<void> initialize() async {\r\n     realtime = ably.Realtime(\r\n"
+                },
+                {
+                    "date": 1748742414362,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n \r\n   late ably.Realtime realtime;\r\n   late ably.RealtimeChannel channel;\r\n \r\n-  final String _baseUrl = 'http://127.0.0.1:8000/api';\r\n+  final String _baseUrl = 'http://10.0.2.2:8000/api';\r\n \r\n   // Inisialisasi Ably dan channel\r\n   Future<void> initialize() async {\r\n     realtime = ably.Realtime(\r\n"
                 }
             ],
             "date": 1748050746209,

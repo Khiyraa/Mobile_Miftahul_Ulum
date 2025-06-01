@@ -12,7 +12,7 @@ class AblyService {
   late ably.Realtime realtime;
   late ably.RealtimeChannel channel;
 
-  final String _baseUrl = 'https://webfw23.myhost.id/gol_d1/miftahul-ulum/api';
+  final String _baseUrl = 'http://10.0.2.2:8000/api';
 
   // Inisialisasi Ably dan channel
   Future<void> initialize() async {
