@@ -1,8 +1,65 @@
 import 'package:flutter/material.dart';
 import '../screens/chat_admin_screen.dart'; // Import ChatScreen
+import '../services/ably_service.dart'; // Pastikan ada
+import '../models/current_user.dart'; // Pastikan ada
 
-class QuickActionsCard extends StatelessWidget {
+class QuickActionsCard extends StatefulWidget {
   const QuickActionsCard({super.key});
+
+  @override
+  State<QuickActionsCard> createState() => _QuickActionsCardState();
+}
+
+class _QuickActionsCardState extends State<QuickActionsCard> {
+  final AblyService _ablyService = AblyService();
+  final CurrentUser _currentUser = CurrentUser();
+
+  Future<void> _handleLiveChatTap(BuildContext context) async {
+    try {
+      final token = await _currentUser.token;
+      final idOrtu = _currentUser.idAkun;
+
+      if (token == null || idOrtu == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Token atau ID akun tidak tersedia.'),
+          ),
+        );
+        return;
+      }
+
+      final idSession = await _ablyService.getOrCreateSession(
+        idStaf: 1,
+        idOrtu: idOrtu,
+        token: token,
+      );
+
+      if (idSession != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatScreen(
+              idStaf: 1,
+              idOrtu: idOrtu,
+              role: 'orang_tua',
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Gagal membuat sesi chat. Pastikan Anda sudah login dan memiliki akses.',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,13 +69,7 @@ class QuickActionsCard extends StatelessWidget {
         'subtitle': 'Chat dengan Ustadz',
         'icon': Icons.chat,
         'color': const Color(0xFF4CAF50),
-        'onTap': () {
-          // Navigate to ChatScreen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const ChatScreen()),
-          );
-        },
+        'onTap': () => _handleLiveChatTap(context),
       },
       {
         'title': 'Laporan',
@@ -26,7 +77,6 @@ class QuickActionsCard extends StatelessWidget {
         'icon': Icons.assessment,
         'color': const Color(0xFFFF9800),
         'onTap': () {
-          // Handle laporan tap - bisa ditambahkan navigasi ke halaman laporan
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Fitur Laporan akan segera tersedia')),
           );
@@ -60,8 +110,7 @@ class QuickActionsCard extends StatelessWidget {
               itemBuilder: (context, index) {
                 final action = actions[index];
                 return InkWell(
-                  onTap:
-                      action['onTap'], // Use the onTap function from the action
+                  onTap: action['onTap'],
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     padding: const EdgeInsets.all(12),

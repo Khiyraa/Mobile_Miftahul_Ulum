@@ -87,33 +87,24 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _sendMessage() async {
-    final text = _controller.text.trim();
-    if (text.isEmpty || _sessionId == null) return;
+  final text = _controller.text.trim();
+  if (text.isEmpty || _sessionId == null) return;
 
-    try {
-      await _ablyService.sendMessage(
-        idSession: _sessionId!,
-        pesan: text,
-        pengirim: widget.role,
-      );
+  try {
+    await _ablyService.sendMessage(
+      idSession: _sessionId!,
+      pesan: text,
+      pengirim: widget.role,
+    );
 
-      setState(() {
-        _messages.add({
-          'pesan': text,
-          'pengirim': widget.role,
-          'created_at': DateTime.now().toIso8601String(),
-        });
-        _controller.clear();
-      });
-
-      _scrollToBottom();
-    } catch (e) {
-      // Tambahkan penanganan error agar user tahu jika gagal mengirim pesan
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Gagal mengirim pesan: $e')));
-    }
+    _controller.clear(); // Cukup clear input
+    _scrollToBottom();   // Scroll biar langsung terlihat
+  } catch (e) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Gagal mengirim pesan: $e')));
   }
+}
 
   Widget _buildMessageItem(Map<String, dynamic> message) {
     final bool isMine = message['pengirim'] == widget.role;

@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard Santri'),
+        title: const Text('Miftahul Ulum'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),

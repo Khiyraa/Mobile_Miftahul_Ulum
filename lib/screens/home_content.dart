@@ -6,7 +6,7 @@ import '../widgets/ibadah_summary_card.dart';
 import '../widgets/jadwal_harian_card.dart';
 import '../widgets/prestasi_card.dart';
 import '../widgets/perizinan_card.dart';
-import '../widgets/kesehatan_card.dart';
+// import '../widgets/kesehatan_card.dart';
 import '../widgets/pengumuman_card.dart';
 import '../widgets/quick_actions_card.dart';
 import '../services/santri_api_service.dart';
@@ -35,21 +35,21 @@ class _HomeContentState extends State<HomeContent> {
   Future<void> _loadOrtuIdAndSantri() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Ambil ID orang tua yang login dari SharedPreferences
-    final ortuIdFromPrefs = prefs.getString('ortu_id');
+    // Ambil id_akun sebagai int, lalu ubah ke string untuk API (kalau API butuh string)
+    final int? ortuIdFromPrefs = prefs.getInt('id_akun');
+
+    print('Loaded ortuId from prefs: $ortuIdFromPrefs');
 
     if (ortuIdFromPrefs != null) {
       setState(() {
-        ortuId = ortuIdFromPrefs;
+        ortuId = ortuIdFromPrefs.toString(); // konversi ke string
       });
 
-      // Ambil data santri berdasarkan ID orang tua
       await _loadSantriData();
     } else {
       setState(() {
         isLoading = false;
       });
-      // Handle jika tidak ada ID orang tua (belum login)
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('ID orang tua tidak ditemukan. Silakan login ulang.'),
@@ -64,14 +64,26 @@ class _HomeContentState extends State<HomeContent> {
     try {
       final response = await ApiService.getSantriByOrtuId(ortuId!);
 
+      // 🐞 Debug isi response dari server
+      print('=== DEBUG: Response ===');
+      print('Success: ${response.success}');
+      print('Message: ${response.message}');
+      print('Data (parsed): ${response.data}');
+
       if (response.success && response.data != null) {
+        // 🐞 Debug tipe dan isi data
+        print('=== DEBUG: Mapping ke List<Santri> ===');
+        print('Data type: ${response.data.runtimeType}');
+        print('First item: ${response.data![0]}');
+
         setState(() {
           santriList = response.data!;
-          // Set santri pertama sebagai default yang dipilih
+
           if (santriList.isNotEmpty) {
             selectedSantriId = santriList.first.idSantri;
             selectedSantri = santriList.first;
           }
+
           isLoading = false;
         });
       } else {
@@ -82,7 +94,11 @@ class _HomeContentState extends State<HomeContent> {
           context,
         ).showSnackBar(SnackBar(content: Text(response.message)));
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('=== ERROR CAUGHT ===');
+      print('Error: $e');
+      print('StackTrace: $stackTrace');
+
       setState(() {
         isLoading = false;
       });

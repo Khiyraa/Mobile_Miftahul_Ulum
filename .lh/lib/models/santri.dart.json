@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/models/santri.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1748752385733,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1748818472666,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,63 @@\n+class Santri {\r\n+  final String idSantri;\r\n+  final String nama;\r\n+  final String tahunAngkatan;\r\n+  final String? sidikJari;\r\n+  final String status;\r\n+  final int idOrtu;\r\n+  final Ortu? ortu;\r\n+\r\n+  Santri({\r\n+    required this.idSantri,\r\n+    required this.nama,\r\n+    required this.tahunAngkatan,\r\n+    this.sidikJari,\r\n+    required this.status,\r\n+    required this.idOrtu,\r\n+    this.ortu,\r\n+  });\r\n+\r\n+  factory Santri.fromJson(Map<String, dynamic> json) {\r\n+    return Santri(\r\n+      idSantri: json['id_santri'],\r\n+      nama: json['nama'],\r\n+      tahunAngkatan: json['tahun_angkatan'],\r\n+      sidikJari: json['sidik_jari'],\r\n+      status: json['status'],\r\n+      idOrtu: int.tryParse(json['id_ortu'].toString()) ?? 0,\r\n+      ortu: json['ortu'] != null ? Ortu.fromJson(json['ortu']) : null,\r\n+    );\r\n+  }\r\n+\r\n+  Map<String, dynamic> toJson() {\r\n+    return {\r\n+      'id_santri': idSantri,\r\n+      'nama': nama,\r\n+      'tahun_angkatan': tahunAngkatan,\r\n+      'sidik_jari': sidikJari,\r\n+      'status': status,\r\n+      'id_ortu': idOrtu,\r\n+      'ortu': ortu?.toJson(),\r\n+    };\r\n+  }\r\n+}\r\n+\r\n+class Ortu {\r\n+  final String namaLengkap;\r\n+  final String alamat;\r\n+  final String noTelp;\r\n+\r\n+  Ortu({required this.namaLengkap, required this.alamat, required this.noTelp});\r\n+\r\n+  factory Ortu.fromJson(Map<String, dynamic> json) {\r\n+    return Ortu(\r\n+      namaLengkap: json['nama_lengkap'],\r\n+      alamat: json['alamat'],\r\n+      noTelp: json['no_telp'],\r\n+    );\r\n+  }\r\n+\r\n+  Map<String, dynamic> toJson() {\r\n+    return {'nama_lengkap': namaLengkap, 'alamat': alamat, 'no_telp': noTelp};\r\n+  }\r\n+}\r\n"
+                }
+            ],
+            "date": 1748752385733,
+            "name": "Commit-0",
+            "content": "class Santri {\r\n  final String idSantri;\r\n  final String nama;\r\n  final String tahunAngkatan;\r\n  final String? sidikJari;\r\n  final String status;\r\n  final int idOrtu;\r\n  final Ortu? ortu;\r\n\r\n  Santri({\r\n    required this.idSantri,\r\n    required this.nama,\r\n    required this.tahunAngkatan,\r\n    this.sidikJari,\r\n    required this.status,\r\n    required this.idOrtu,\r\n    this.ortu,\r\n  });\r\n\r\n  factory Santri.fromJson(Map<String, dynamic> json) {\r\n    return Santri(\r\n      idSantri: json['id_santri'],\r\n      nama: json['nama'],\r\n      tahunAngkatan: json['tahun_angkatan'],\r\n      sidikJari: json['sidik_jari'],\r\n      status: json['status'],\r\n      idOrtu: int.tryParse(json['id_ortu'].toString()) ?? 0,\r\n      ortu: json['ortu'] != null ? Ortu.fromJson(json['ortu']) : null,\r\n    );\r\n  }\r\n\r\n  Map<String, dynamic> toJson() {\r\n    return {\r\n      'id_santri': idSantri,\r\n      'nama': nama,\r\n      'tahun_angkatan': tahunAngkatan,\r\n      'sidik_jari': sidikJari,\r\n      'status': status,\r\n      'id_ortu': idOrtu,\r\n      'ortu': ortu?.toJson(),\r\n    };\r\n  }\r\n}\r\n\r\nclass Ortu {\r\n  final String namaLengkap;\r\n  final String alamat;\r\n  final String noTelp;\r\n\r\n  Ortu({required this.namaLengkap, required this.alamat, required this.noTelp});\r\n\r\n  factory Ortu.fromJson(Map<String, dynamic> json) {\r\n    return Ortu(\r\n      namaLengkap: json['nama_lengkap'],\r\n      alamat: json['alamat'],\r\n      noTelp: json['no_telp'],\r\n    );\r\n  }\r\n\r\n  Map<String, dynamic> toJson() {\r\n    return {'nama_lengkap': namaLengkap, 'alamat': alamat, 'no_telp': noTelp};\r\n  }\r\n}\r\n"
+        }
+    ]
+}

@@ -42,14 +42,12 @@ class KehadiranMingguan {
   factory KehadiranMingguan.fromJson(Map<String, dynamic> json) {
     return KehadiranMingguan(
       tanggal: json['tanggal'] ?? '',
-      jumlahKehadiran: json['jumlah_kehadiran'] ?? 0,
-      // Cek kehadiran berdasarkan value boolean dari database
+      jumlahKehadiran: int.tryParse(json['jumlah_kehadiran'].toString()) ?? 0,
       subuh: _parseBool(json['Subuh']),
       dzuhur: _parseBool(json['Dzuhur']),
       ashar: _parseBool(json['Ashar']),
       maghrib: _parseBool(json['Maghrib']),
       isya: _parseBool(json['Isya']),
-      // Jam masuk dan keluar (jika ada di response)
       jamMasukSubuh: json['jam_masuk_subuh'],
       jamKeluarSubuh: json['jam_keluar_subuh'],
       jamMasukDzuhur: json['jam_masuk_dzuhur'],

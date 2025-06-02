@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/models/kehadiran_data.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1748816903227,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1748817640097,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -101,5 +101,5 @@\n     } else {\r\n       return Colors.red;\r\n     }\r\n   }\r\n-}\n\\ No newline at end of file\n+}\r\n"
+                }
+            ],
+            "date": 1748816903227,
+            "name": "Commit-0",
+            "content": "import 'package:flutter/material.dart';\r\n\r\nclass KehadiranData {\r\n  final int jumlahKehadiranSeminggu;\r\n  final int jumlahKehadiranMingguanSeharusnya;\r\n  final int jumlahKehadiranSebulan;\r\n  final int jumlahKehadiranBulanSeharusnya;\r\n  final int jumlahKehadiranSetahun;\r\n  final int jumlahKehadiranTahunanSeharusnya;\r\n\r\n  KehadiranData({\r\n    required this.jumlahKehadiranSeminggu,\r\n    required this.jumlahKehadiranMingguanSeharusnya,\r\n    required this.jumlahKehadiranSebulan,\r\n    required this.jumlahKehadiranBulanSeharusnya,\r\n    required this.jumlahKehadiranSetahun,\r\n    required this.jumlahKehadiranTahunanSeharusnya,\r\n  });\r\n\r\n  factory KehadiranData.fromJson(Map<String, dynamic> json) {\r\n    return KehadiranData(\r\n      jumlahKehadiranSeminggu: json['jumlah kehadiran seminggu'] ?? 0,\r\n      jumlahKehadiranMingguanSeharusnya:\r\n          json['Jumlah kehadiran mingguan seharusnya'] ?? 0,\r\n      jumlahKehadiranSebulan: json['jumlah kehadiran sebulan'] ?? 0,\r\n      jumlahKehadiranBulanSeharusnya:\r\n          json['Jumlah kehadiran bulan seharusnya'] ?? 0,\r\n      jumlahKehadiranSetahun: json['jumlah kehadiran setahun'] ?? 0,\r\n      jumlahKehadiranTahunanSeharusnya:\r\n          json['Jumlah kehadiran tahunan seharusnya'] ?? 0,\r\n    );\r\n  }\r\n\r\n  double getPersentaseKehadiran(String periode) {\r\n    switch (periode) {\r\n      case 'seminggu':\r\n        return jumlahKehadiranMingguanSeharusnya > 0\r\n            ? (jumlahKehadiranSeminggu / jumlahKehadiranMingguanSeharusnya) *\r\n                100\r\n            : 0.0;\r\n      case 'sebulan':\r\n        return jumlahKehadiranBulanSeharusnya > 0\r\n            ? (jumlahKehadiranSebulan / jumlahKehadiranBulanSeharusnya) * 100\r\n            : 0.0;\r\n      case 'setahun':\r\n        return jumlahKehadiranTahunanSeharusnya > 0\r\n            ? (jumlahKehadiranSetahun / jumlahKehadiranTahunanSeharusnya) * 100\r\n            : 0.0;\r\n      default:\r\n        return 0.0;\r\n    }\r\n  }\r\n\r\n  int getJumlahKehadiran(String periode) {\r\n    switch (periode) {\r\n      case 'seminggu':\r\n        return jumlahKehadiranSeminggu;\r\n      case 'sebulan':\r\n        return jumlahKehadiranSebulan;\r\n      case 'setahun':\r\n        return jumlahKehadiranSetahun;\r\n      default:\r\n        return 0;\r\n    }\r\n  }\r\n\r\n  int getJumlahSeharusnya(String periode) {\r\n    switch (periode) {\r\n      case 'seminggu':\r\n        return jumlahKehadiranMingguanSeharusnya;\r\n      case 'sebulan':\r\n        return jumlahKehadiranBulanSeharusnya;\r\n      case 'setahun':\r\n        return jumlahKehadiranTahunanSeharusnya;\r\n      default:\r\n        return 0;\r\n    }\r\n  }\r\n\r\n  String getStatusKehadiran(String periode) {\r\n    final persentase = getPersentaseKehadiran(periode);\r\n    if (persentase >= 90) {\r\n      return 'Sangat Baik';\r\n    } else if (persentase >= 80) {\r\n      return 'Baik';\r\n    } else if (persentase >= 70) {\r\n      return 'Cukup';\r\n    } else {\r\n      return 'Perlu Perbaikan';\r\n    }\r\n  }\r\n\r\n  Color getStatusColor(String periode) {\r\n    final persentase = getPersentaseKehadiran(periode);\r\n    if (persentase >= 90) {\r\n      return Colors.green;\r\n    } else if (persentase >= 80) {\r\n      return Colors.blue;\r\n    } else if (persentase >= 70) {\r\n      return Colors.orange;\r\n    } else {\r\n      return Colors.red;\r\n    }\r\n  }\r\n}"
+        }
+    ]
+}

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/santri.dart';
 import '../models/kehadiran_mingguan.dart';
+import '../models/kehadiran_periode.dart';
 import '../models/kehadiran_data.dart';
 import '../models/perizinan.dart';
 import 'package:universal_io/io.dart';
@@ -9,16 +10,10 @@ import 'package:universal_io/io.dart';
 class ApiService {
   // Base URL configuration
   static String getBaseUrl() {
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8000'; // Android emulator
-    } else if (Platform.isIOS) {
-      return 'http://localhost:8000'; // iOS simulator
-    } else {
-      return 'http://127.0.0.1:8000'; // Web/Desktop
-    }
+    return 'https://webfw23.myhost.id/gol_d1/miftahul-ulum/api';
   }
 
-  static final String baseUrl = '${getBaseUrl()}/api';
+  static final String baseUrl = getBaseUrl();
   static const Map<String, String> headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -256,6 +251,16 @@ class ApiResponse<T> {
     this.data,
     this.error,
   });
+
+  // ✅ Tambahkan ini
+  factory ApiResponse.success({required T data, String message = 'Berhasil'}) {
+    return ApiResponse<T>(success: true, message: message, data: data);
+  }
+
+  // ✅ Tambahkan ini juga
+  factory ApiResponse.error({required String message}) {
+    return ApiResponse<T>(success: false, message: message, error: message);
+  }
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,

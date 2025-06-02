@@ -19,8 +19,6 @@ class _DisiplinCardState extends State<DisiplinCard> {
 
   final List<Map<String, String>> filterOptions = [
     {'value': 'seminggu', 'label': '7 Hari'},
-    {'value': 'sebulan', 'label': '1 Bulan'},
-    {'value': 'setahun', 'label': '1 Tahun'},
   ];
 
   @override
@@ -87,32 +85,15 @@ class _DisiplinCardState extends State<DisiplinCard> {
         final tanggalKehadiran = DateTime.parse(kehadiran.tanggal);
         if (tanggalKehadiran.isAfter(cutoffDate) ||
             tanggalKehadiran.isAtSameMomentAs(cutoffDate)) {
-          totalSholat += kehadiran.jumlahKehadiran;
+          // Setiap hari ada 5 waktu sholat
           totalSeharusnya += 5;
-        }
-      }
-    } else if (periode == 'sebulan') {
-      int hari = 30;
-      final cutoffDate = DateTime.now().subtract(Duration(days: hari));
 
-      for (var kehadiran in kehadiranData!) {
-        final tanggalKehadiran = DateTime.parse(kehadiran.tanggal);
-        if (tanggalKehadiran.isAfter(cutoffDate) ||
-            tanggalKehadiran.isAtSameMomentAs(cutoffDate)) {
-          totalSholat += kehadiran.jumlahKehadiran;
-          totalSeharusnya += 5;
-        }
-      }
-    } else if (periode == 'setahun') {
-      int hari = 365;
-      final cutoffDate = DateTime.now().subtract(Duration(days: hari));
-
-      for (var kehadiran in kehadiranData!) {
-        final tanggalKehadiran = DateTime.parse(kehadiran.tanggal);
-        if (tanggalKehadiran.isAfter(cutoffDate) ||
-            tanggalKehadiran.isAtSameMomentAs(cutoffDate)) {
-          totalSholat += kehadiran.jumlahKehadiran;
-          totalSeharusnya += 5;
+          // Tambahkan kehadiran hanya jika benar-benar hadir
+          if (kehadiran.subuh) totalSholat++;
+          if (kehadiran.dzuhur) totalSholat++;
+          if (kehadiran.ashar) totalSholat++;
+          if (kehadiran.maghrib) totalSholat++;
+          if (kehadiran.isya) totalSholat++;
         }
       }
     }
@@ -216,76 +197,30 @@ class _DisiplinCardState extends State<DisiplinCard> {
           const SizedBox(height: 10),
 
           // Filter Dropdown
+          // Panel Periode (statis)
           Align(
             alignment: Alignment.centerLeft,
-            child: GestureDetector(
-              onTapDown: (details) async {
-                final selected = await showMenu<String>(
-                  context: context,
-                  position: RelativeRect.fromLTRB(
-                    details.globalPosition.dx,
-                    details.globalPosition.dy,
-                    0,
-                    0,
-                  ),
-                  color: const Color(0xFF1D7A81),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  items:
-                      filterOptions.map((option) {
-                        return PopupMenuItem<String>(
-                          value: option['value'],
-                          child: Text(
-                            option['label']!,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        );
-                      }).toList(),
-                );
-
-                if (selected != null && selected != selectedPeriode) {
-                  setState(() => selectedPeriode = selected);
-                }
-              },
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1,
                 ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 1,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.access_time, size: 16, color: Colors.white),
+                  SizedBox(width: 6),
+                  Text(
+                    '7 Hari Terakhir',
+                    style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.filter_list,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      filterOptions.firstWhere(
-                        (element) => element['value'] == selectedPeriode,
-                        orElse: () => {'label': ''},
-                      )['label']!,
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(
-                      Icons.expand_more,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ],
-                ),
+                ],
               ),
             ),
           ),
@@ -309,11 +244,11 @@ class _DisiplinCardState extends State<DisiplinCard> {
 
   Widget _buildIbadahContent() {
     final summary = _getIbadahSummary(selectedPeriode);
-    final persentase = summary['persentase'] as double;
-    final totalSholat = summary['totalSholat'] as int;
-    final totalSeharusnya = summary['totalSeharusnya'] as int;
-    final status = summary['status'] as String;
-    final statusColor = summary['statusColor'] as Color;
+    final totalSeharusnya = (summary['totalSeharusnya'] as int?) ?? 0;
+    final totalSholat = (summary['totalSholat'] as int?) ?? 0;
+    final persentase = (summary['persentase'] as double?) ?? 0.0;
+    final status = (summary['status'] as String?) ?? 'Tidak Diketahui';
+    final statusColor = (summary['statusColor'] as Color?) ?? Colors.grey;
 
     return Column(
       children: [

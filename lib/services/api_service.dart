@@ -7,15 +7,15 @@ import 'package:flutter/material.dart';
 // ======================= BAGIAN KEDUA: Fungsi Umum =======================
 
 String getBaseUrl() {
-  if (kIsWeb) {
-    return 'http://127.0.0.1:8000';
-  } else if (Platform.isAndroid) {
-    return 'http://10.0.2.2:8000';
-  } else {
-    return 'http://127.0.0.1:8000';
-  }
+  // if (kIsWeb) {
+  //   return 'http://127.0.0.1:8000';
+  // } else if (Platform.isAndroid) {
+  //   return 'http://10.0.2.2:8000';
+  // } else {
+  //   return 'http://127.0.0.1:8000';
+  // }
   // Karena Anda ingin selalu pakai base URL yang tetap ini, kita override semua kondisi:
-  // return 'https://webfw23.myhost.id/gol_d1/miftahul-ulum';
+  return 'https://webfw23.myhost.id/gol_d1/miftahul-ulum';
 }
 
 Future<Map<String, dynamic>> loginUser(String email, String password) async {
@@ -230,14 +230,18 @@ class PengumumanModel {
   factory PengumumanModel.fromJson(Map<String, dynamic> json) {
     try {
       return PengumumanModel(
-        id: json['id'] ?? 0,
+        id: json['id_pengumuman'] is int
+            ? json['id_pengumuman']
+            : int.tryParse(json['id_pengumuman'].toString()) ?? 0,
         judul: json['judul'] ?? '',
         isi: json['isi'] ?? '',
         kategori: json['kategori'] ?? '',
         tglMulai: _parseDateTime(json['tgl_mulai']),
         tglSelesai: _parseDateTime(json['tgl_selesai']),
         foto: json['foto'],
-        idAkun: json['id_akun'] ?? 0,
+        idAkun: json['id_akun'] is int
+            ? json['id_akun']
+            : int.tryParse(json['id_akun'].toString()) ?? 0,
         createdAt: _parseDateTime(json['created_at']),
         updatedAt: _parseDateTime(json['updated_at']),
       );
@@ -265,7 +269,7 @@ class PengumumanModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'id_pengumuman': id,
       'judul': judul,
       'isi': isi,
       'kategori': kategori,
@@ -318,6 +322,7 @@ class PengumumanModel {
         now.isBefore(tglSelesai.add(const Duration(days: 1)));
   }
 }
+
 
 extension PengumumanModelExtension on PengumumanModel {
   String get fotoUrl {

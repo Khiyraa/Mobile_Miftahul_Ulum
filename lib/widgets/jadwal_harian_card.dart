@@ -382,6 +382,8 @@ class _JadwalHarianCardState extends State<JadwalHarianCard> {
   }
 
   bool _isPrayerTimePast(String prayerTime, DateTime date) {
+    print('Debug _isPrayerTimePast - prayerTime: $prayerTime'); // debug
+
     final now = DateTime.now();
     final today = DateFormat('yyyy-MM-dd').format(now);
     final dateFormatted = DateFormat('yyyy-MM-dd').format(date);
@@ -392,11 +394,19 @@ class _JadwalHarianCardState extends State<JadwalHarianCard> {
     }
 
     final timeParts = prayerTime.split(':');
+    print('Debug _isPrayerTimePast - timeParts: $timeParts'); // debug
+    print(
+      'Debug _isPrayerTimePast - timeParts[0]: ${timeParts[0]}, type: ${timeParts[0].runtimeType}',
+    ); // debug
+    print(
+      'Debug _isPrayerTimePast - timeParts[1]: ${timeParts[1]}, type: ${timeParts[1].runtimeType}',
+    ); // debug
+
     final prayerDateTime = DateTime(
       date.year,
       date.month,
       date.day,
-      int.parse(timeParts[0]),
+      int.parse(timeParts[0]), // <- error kemungkinan muncul di sini
       int.parse(timeParts[1]),
     );
 

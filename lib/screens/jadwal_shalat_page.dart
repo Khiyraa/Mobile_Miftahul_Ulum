@@ -54,7 +54,7 @@ class _JadwalShalatViewState extends State<JadwalShalatView> {
                 
                 // Dropdown Lokasi with spacing
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: DropdownLokasi(
                     onCitySelected: (city) {
                       setState(() {

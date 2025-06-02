@@ -1,0 +1,18 @@
+{
+    "sourceFile": "android/app/proguard-rules.pro",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1748783417950,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1748783417950,
+            "name": "Commit-0",
+            "content": "# Keep Firebase Messaging classes\r\n-keep class com.google.firebase.messaging.** { *; }\r\n-dontwarn com.google.firebase.messaging.**\r\n\r\n# Keep Firebase common\r\n-keep class com.google.firebase.** { *; }\r\n-dontwarn com.google.firebase.**\r\n\r\n# Keep Gson (sering dipakai Firebase)\r\n-keep class com.google.gson.** { *; }\r\n-dontwarn com.google.gson.**\r\n"
+        }
+    ]
+}
