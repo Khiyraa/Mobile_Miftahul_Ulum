@@ -8,11 +8,11 @@ class ChatScreen extends StatefulWidget {
   final String role; // 'staf' atau 'orang_tua'
 
   const ChatScreen({
-    Key? key,
+    super.key,
     required this.idStaf,
     required this.idOrtu,
     required this.role,
-  }) : super(key: key);
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();

@@ -6,7 +6,7 @@ import '../widgets/ibadah_summary_card.dart';
 import '../widgets/jadwal_harian_card.dart';
 import '../widgets/prestasi_card.dart';
 import '../widgets/perizinan_card.dart';
-import '../widgets/kesehatan_card.dart';
+// import '../widgets/kesehatan_card.dart';
 import '../widgets/pengumuman_card.dart';
 import '../widgets/quick_actions_card.dart';
 import '../services/santri_api_service.dart';
