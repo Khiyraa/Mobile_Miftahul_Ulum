@@ -15,39 +15,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isLoading = false;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
 
-  String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Email tidak boleh kosong';
-    }
-    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-      return 'Format email tidak valid';
-    }
-    return null;
-  }
-
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Password tidak boleh kosong';
-    if (value.length < 8) return 'Minimal 8 karakter';
-    if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d_]{8,}$').hasMatch(value)) {
-      return 'Gunakan huruf, angka, dan simbol _';
-    }
-    return null;
-  }
-
   Future<void> sendResetLink() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isLoading = true);
 
     try {
       final response = await sendResetLinkAPI(emailController.text);
       if (response['success'] == true) {
-        // Navigate to token verification screen with email and new password
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -59,208 +39,105 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response['message'] ?? 'Gagal mengirim email'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(response['message'] ?? 'Gagal mengirim email'), backgroundColor: Colors.red),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Terjadi kesalahan: $e'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Terjadi kesalahan: $e'), backgroundColor: Colors.red),
       );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7F8),
       appBar: AppBar(
-        title: const Text('Reset Password'),
+        title: Text('Lupa Password', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Icon
-              Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.only(bottom: 32),
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.teal.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.lock_reset,
-                    size: 40,
-                    color: Colors.teal,
-                  ),
-                ),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 120,
+              decoration: const BoxDecoration(
+                color: Colors.teal,
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
               ),
-
-              // Deskripsi
-              Text(
-                'Masukkan email dan password baru Anda. Kami akan mengirim kode verifikasi ke email Anda.',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 32),
-
-              // Email Field
-              TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  prefixIcon: const Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.teal, width: 2),
-                  ),
-                ),
-                validator: validateEmail,
-              ),
-
-              const SizedBox(height: 16),
-
-              // Password Baru Field
-              TextFormField(
-                controller: newPasswordController,
-                obscureText: _obscureNewPassword,
-                decoration: InputDecoration(
-                  labelText: "Password Baru",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureNewPassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+              child: const Icon(Icons.lock_reset_rounded, size: 80, color: Colors.white24),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(30),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Text(
+                      'Masukkan email terdaftar dan buat password baru Anda.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(color: Colors.grey[600]),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureNewPassword = !_obscureNewPassword;
-                      });
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.teal, width: 2),
-                  ),
-                ),
-                validator: validatePassword,
-              ),
-
-              const SizedBox(height: 16),
-
-              // Konfirmasi Password Field
-              TextFormField(
-                controller: confirmPasswordController,
-                obscureText: _obscureConfirmPassword,
-                decoration: InputDecoration(
-                  labelText: "Konfirmasi Password",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureConfirmPassword
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      });
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.teal, width: 2),
-                  ),
-                ),
-                validator: (value) {
-                  final passwordValidation = validatePassword(value);
-                  if (passwordValidation != null) return passwordValidation;
-                  
-                  if (value != newPasswordController.text) {
-                    return 'Konfirmasi password tidak cocok';
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 32),
-
-              // Tombol Kirim
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: _isLoading ? null : sendResetLink,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    const SizedBox(height: 30),
+                    _buildTextField(emailController, 'Email', Icons.email_outlined, false),
+                    const SizedBox(height: 20),
+                    _buildTextField(newPasswordController, 'Password Baru', Icons.lock_outline, true, isNew: true),
+                    const SizedBox(height: 20),
+                    _buildTextField(confirmPasswordController, 'Konfirmasi Password', Icons.lock_outline, true, isConfirm: true),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.teal,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                         ),
-                      )
-                    : const Text(
-                        "Kirim Kode Verifikasi",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        onPressed: _isLoading ? null : sendResetLink,
+                        child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text('KIRIM KODE', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white)),
                       ),
-              ),
-
-              const SizedBox(height: 16),
-              
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  "Kembali ke Login",
-                  style: TextStyle(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.w500,
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label, IconData icon, bool isPassword, {bool isNew = false, bool isConfirm = false}) {
+    return TextFormField(
+      controller: controller,
+      obscureText: isPassword && (isNew ? _obscureNewPassword : _obscureConfirmPassword),
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.teal),
+        suffixIcon: isPassword ? IconButton(
+          icon: Icon((isNew ? _obscureNewPassword : _obscureConfirmPassword) ? Icons.visibility : Icons.visibility_off),
+          onPressed: () => setState(() {
+            if (isNew) _obscureNewPassword = !_obscureNewPassword;
+            else _obscureConfirmPassword = !_obscureConfirmPassword;
+          }),
+        ) : null,
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
+      ),
+      validator: (v) {
+        if (v == null || v.isEmpty) return 'Wajib diisi';
+        if (isConfirm && v != newPasswordController.text) return 'Password tidak cocok';
+        return null;
+      },
     );
   }
 }

@@ -21,7 +21,7 @@ String getBaseUrl() {
 Future<Map<String, dynamic>> loginUser(String email, String password) async {
   final baseUrl = getBaseUrl();
   final url = Uri.parse('$baseUrl/api/login');
-  
+
   try {
     final response = await http.post(
       url,
@@ -31,9 +31,9 @@ Future<Map<String, dynamic>> loginUser(String email, String password) async {
       },
       body: jsonEncode({'email': email, 'password': password}),
     );
-    
+
     final responseData = jsonDecode(response.body);
-    
+
     if (response.statusCode == 200) {
       return responseData;
     } else {
@@ -54,7 +54,7 @@ Future<Map<String, dynamic>> loginUser(String email, String password) async {
 Future<Map<String, dynamic>> sendResetLinkAPI(String email) async {
   final baseUrl = getBaseUrl();
   final url = Uri.parse('$baseUrl/api/forgot-password'); // UBAH DARI send-reset-link KE forgot-password
-  
+
   try {
     final response = await http.post(
       url,
@@ -66,12 +66,12 @@ Future<Map<String, dynamic>> sendResetLinkAPI(String email) async {
         'email': email,
       }),
     );
-    
+
     print('Send Reset Link Response Status: ${response.statusCode}');
     print('Send Reset Link Response Body: ${response.body}');
-    
+
     final responseData = jsonDecode(response.body);
-    
+
     if (response.statusCode == 200) {
       return {
         'success': true,
@@ -100,7 +100,7 @@ Future<Map<String, dynamic>> verifyResetPasswordAPI(
 ) async {
   final baseUrl = getBaseUrl();
   final url = Uri.parse('$baseUrl/api/reset-password');
-  
+
   try {
     final requestBody = {
       'email': email,
@@ -108,9 +108,9 @@ Future<Map<String, dynamic>> verifyResetPasswordAPI(
       'password': newPassword,
       'password_confirmation': newPassword,
     };
-    
+
     print('Verify Reset Password Request: $requestBody');
-    
+
     final response = await http.post(
       url,
       headers: {
@@ -119,12 +119,12 @@ Future<Map<String, dynamic>> verifyResetPasswordAPI(
       },
       body: jsonEncode(requestBody),
     );
-    
+
     print('Verify Reset Password Response Status: ${response.statusCode}');
     print('Verify Reset Password Response Body: ${response.body}');
-    
+
     final responseData = jsonDecode(response.body);
-    
+
     if (response.statusCode == 200) {
       return {
         'success': true,
@@ -149,8 +149,8 @@ Future<Map<String, dynamic>> verifyResetPasswordAPI(
 // ======================= BAGIAN PERTAMA: ApiService & Model =======================
 
 class ApiService {
-  // Base URL API yang baru
-  static final String baseUrl = 'https://webfw23.myhost.id/gol_d1/miftahul-ulum/api';
+  // Base URL API yang baru (Local Laravel V2)
+  static final String baseUrl = 'http://10.0.2.2:8000/api';
 
   // Singleton pattern untuk memastikan hanya ada satu instance
   static final ApiService _instance = ApiService._internal();

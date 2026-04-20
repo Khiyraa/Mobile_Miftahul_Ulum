@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_miftahul_ulum/screens/jadwal_shalat_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'home_content.dart';
+import 'jadwal_shalat_page.dart';
 import 'faq_form.dart';
 import '../navbar/custom_bottom_navbar.dart';
 import '../navbar/nav_item.dart';
@@ -15,85 +16,69 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 1;
-  late final CurrentUser _currentUser = CurrentUser();
+  final CurrentUser _currentUser = CurrentUser();
 
-  late final Widget _jadwalShalatPage = const JadwalShalatPage();
-  late final Widget _homePage = const HomeContent();
-  late final Widget _faqPage = const FaqForm();
-
-  late final List<NavItem> _navItems;
+  late final List<NavItem> _navItems = [
+    NavItem(
+      label: 'Jadwal',
+      icon: Icons.access_time_filled_rounded,
+      page: const JadwalShalatPage(),
+    ),
+    NavItem(
+      label: 'Beranda',
+      icon: Icons.home_rounded,
+      page: const HomeContent(),
+    ),
+    NavItem(
+      label: 'Bantuan',
+      icon: Icons.help_center_rounded,
+      page: const FaqForm(),
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
-    _initializeUserData();
-
-    _navItems = [
-      NavItem(
-        label: 'Santri',
-        icon: Icons.calendar_today,
-        page: const JadwalShalatPage(),
-      ),
-      NavItem(label: 'Home', icon: Icons.home, page: _homePage),
-      NavItem(
-        label: 'Pengumuman',
-        icon: Icons.chat_bubble_outline,
-        page: _faqPage,
-      ),
-    ];
-  }
-
-  Future<void> _initializeUserData() async {
-    await _currentUser.initFromSharedPrefs();
-    
-    // Untuk debug, tampilkan data user yang sudah diload
-    debugPrint('User Data:');
-    debugPrint('isLoggedIn: ${_currentUser.isLoggedIn}');
-    debugPrint('token: ${_currentUser.token}');
-    debugPrint('idAkun: ${_currentUser.idAkun}');
-    debugPrint('email: ${_currentUser.email}');
-    debugPrint('username: ${_currentUser.username}');
-    debugPrint('hakAkses: ${_currentUser.hakAkses}');
+    _currentUser.initFromSharedPrefs();
   }
 
   Future<void> _logout() async {
-  await _currentUser.clearUserData();
-  
-  if (!mounted) return;
-  Navigator.pushReplacementNamed(context, '/login');
-}
-
-  void _navigate(int index) {
-    setState(() {
-      _currentPage = index;
-    });
+    await _currentUser.clearUserData();
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, '/login');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7F8),
       appBar: AppBar(
-        title: const Text('Dashboard Santri'),
+        title: Text(
+          'Miftahul Ulum',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        backgroundColor: Colors.teal,
+        foregroundColor: Colors.white,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
+            icon: const Icon(Icons.notifications_none_rounded),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout_rounded),
             onPressed: _logout,
           ),
         ],
       ),
       body: IndexedStack(
         index: _currentPage,
-        children: [_jadwalShalatPage, _homePage, _faqPage],
+        children: _navItems.map((e) => e.page).toList(),
       ),
-      extendBody: true,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 0),
-        child: CustomBottomNavBar(
-          currentIndex: _currentPage,
-          items: _navItems,
-          onTap: _navigate,
-        ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _currentPage,
+        items: _navItems,
+        onTap: (index) => setState(() => _currentPage = index),
       ),
     );
   }
