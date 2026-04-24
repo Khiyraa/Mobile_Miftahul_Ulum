@@ -15,7 +15,7 @@ String getBaseUrl() {
   //   return 'http://127.0.0.1:8000';
   // }
   // Karena Anda ingin selalu pakai base URL yang tetap ini, kita override semua kondisi:
-  return 'https://webfw23.myhost.id/gol_d1/miftahul-ulum';
+  return 'http://localhost:8000';
 }
 
 Future<Map<String, dynamic>> loginUser(String email, String password) async {
@@ -150,7 +150,7 @@ Future<Map<String, dynamic>> verifyResetPasswordAPI(
 
 class ApiService {
   // Base URL API yang baru
-  static final String baseUrl = 'https://webfw23.myhost.id/gol_d1/miftahul-ulum/api';
+  static final String baseUrl = 'http://localhost:8000/api';
 
   // Singleton pattern untuk memastikan hanya ada satu instance
   static final ApiService _instance = ApiService._internal();
@@ -331,7 +331,7 @@ extension PengumumanModelExtension on PengumumanModel {
       return 'https://via.placeholder.com/150';
     }
     // Ganti base URL storage juga
-    final url = 'https://webfw23.myhost.id/gol_d1/miftahul-ulum/storage/$foto';
+    final url = 'http://localhost:8000/storage/$foto';
     print('URL foto: $url');
     return url;
   }

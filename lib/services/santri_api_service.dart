@@ -10,7 +10,7 @@ import 'package:universal_io/io.dart';
 class ApiService {
   // Base URL configuration
   static String getBaseUrl() {
-    return 'https://webfw23.myhost.id/gol_d1/miftahul-ulum/api';
+    return 'http://localhost:8000/api';
   }
 
   static final String baseUrl = getBaseUrl();
