@@ -50,16 +50,16 @@ class KehadiranMingguan {
       maghrib: _parseBool(json['Maghrib']),
       isya: _parseBool(json['Isya']),
       // Jam masuk dan keluar (jika ada di response)
-      jamMasukSubuh: json['jam_masuk_subuh'],
-      jamKeluarSubuh: json['jam_keluar_subuh'],
-      jamMasukDzuhur: json['jam_masuk_dzuhur'],
-      jamKeluarDzuhur: json['jam_keluar_dzuhur'],
-      jamMasukAshar: json['jam_masuk_ashar'],
-      jamKeluarAshar: json['jam_keluar_ashar'],
-      jamMasukMaghrib: json['jam_masuk_maghrib'],
-      jamKeluarMaghrib: json['jam_keluar_maghrib'],
-      jamMasukIsya: json['jam_masuk_isya'],
-      jamKeluarIsya: json['jam_keluar_isya'],
+      jamMasukSubuh: json['jam_masuk_subuh']?.toString(),
+      jamKeluarSubuh: json['jam_keluar_subuh']?.toString(),
+      jamMasukDzuhur: json['jam_masuk_dzuhur']?.toString(),
+      jamKeluarDzuhur: json['jam_keluar_dzuhur']?.toString(),
+      jamMasukAshar: json['jam_masuk_ashar']?.toString(),
+      jamKeluarAshar: json['jam_keluar_ashar']?.toString(),
+      jamMasukMaghrib: json['jam_masuk_maghrib']?.toString(),
+      jamKeluarMaghrib: json['jam_keluar_maghrib']?.toString(),
+      jamMasukIsya: json['jam_masuk_isya']?.toString(),
+      jamKeluarIsya: json['jam_keluar_isya']?.toString(),
     );
   }
 

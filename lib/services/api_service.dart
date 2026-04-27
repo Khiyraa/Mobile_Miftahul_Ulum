@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -8,14 +7,10 @@ import 'package:flutter/material.dart';
 
 String getBaseUrl() {
   if (kIsWeb) {
-    return 'http://127.0.0.1:8000';
-  } else if (Platform.isAndroid) {
-    return 'http://10.0.2.2:8000';
+    return 'http://127.0.0.1:8000/api';
   } else {
-    return 'http://127.0.0.1:8000';
+    return 'http://10.0.2.2:8000/api';
   }
-  // Karena Anda ingin selalu pakai base URL yang tetap ini, kita override semua kondisi:
-  // return 'https://webfw23.myhost.id/gol_d1/miftahul-ulum';
 }
 
 Future<Map<String, dynamic>> loginUser(String email, String password) async {
@@ -43,17 +38,16 @@ Future<Map<String, dynamic>> loginUser(String email, String password) async {
       };
     }
   } catch (e) {
-    return {
-      'success': false,
-      'message': 'Terjadi kesalahan: $e',
-    };
+    return {'success': false, 'message': 'Terjadi kesalahan: $e'};
   }
 }
 
 // API untuk mengirim link reset password - DIPERBAIKI ENDPOINT NYA
 Future<Map<String, dynamic>> sendResetLinkAPI(String email) async {
   final baseUrl = getBaseUrl();
-  final url = Uri.parse('$baseUrl/api/forgot-password'); // UBAH DARI send-reset-link KE forgot-password
+  final url = Uri.parse(
+    '$baseUrl/api/forgot-password',
+  ); // UBAH DARI send-reset-link KE forgot-password
 
   try {
     final response = await http.post(
@@ -62,9 +56,7 @@ Future<Map<String, dynamic>> sendResetLinkAPI(String email) async {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: jsonEncode({
-        'email': email,
-      }),
+      body: jsonEncode({'email': email}),
     );
 
     print('Send Reset Link Response Status: ${response.statusCode}');
@@ -85,10 +77,7 @@ Future<Map<String, dynamic>> sendResetLinkAPI(String email) async {
     }
   } catch (e) {
     print('Send Reset Link Error: $e');
-    return {
-      'success': false,
-      'message': 'Terjadi kesalahan: $e',
-    };
+    return {'success': false, 'message': 'Terjadi kesalahan: $e'};
   }
 }
 
@@ -133,16 +122,16 @@ Future<Map<String, dynamic>> verifyResetPasswordAPI(
     } else {
       return {
         'success': false,
-        'message': responseData['message'] ?? responseData['error'] ?? 'Gagal reset password',
+        'message':
+            responseData['message'] ??
+            responseData['error'] ??
+            'Gagal reset password',
         'errors': responseData['errors'] ?? {},
       };
     }
   } catch (e) {
     print('Verify Reset Password Error: $e');
-    return {
-      'success': false,
-      'message': 'Terjadi kesalahan: $e',
-    };
+    return {'success': false, 'message': 'Terjadi kesalahan: $e'};
   }
 }
 
@@ -150,7 +139,13 @@ Future<Map<String, dynamic>> verifyResetPasswordAPI(
 
 class ApiService {
   // Base URL API yang baru (Local Laravel V2)
-  static final String baseUrl = 'http://10.0.2.2:8000/api';
+  static String get baseUrl {
+    if (kIsWeb) {
+      return 'http://127.0.0.1:8000/api';
+    } else {
+      return 'http://10.0.2.2:8000/api';
+    }
+  }
 
   // Singleton pattern untuk memastikan hanya ada satu instance
   static final ApiService _instance = ApiService._internal();
@@ -171,23 +166,11 @@ class ApiService {
         headers: _headers,
       );
 
-      print('Response status: ${response.statusCode}'); // Debug log
-      print('Response body: ${response.body}'); // Debug log
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
-
-        List<dynamic> data;
-
-        if (jsonResponse.containsKey('data')) {
-          data = jsonResponse['data'];
-        } else if (jsonResponse is List) {
-          data = jsonResponse as List<dynamic>;
-        } else {
-          data = json.decode(response.body) as List<dynamic>;
-        }
-
-        print('Data count: ${data.length}'); // Debug log
+        final List<dynamic> data = json.decode(response.body);
 
         return data.map((json) => PengumumanModel.fromJson(json)).toList();
       } else {
@@ -196,7 +179,7 @@ class ApiService {
         );
       }
     } catch (e) {
-      print('Error in getPengumuman: $e'); // Debug log
+      print('Error in getPengumuman: $e');
       throw Exception('Error: $e');
     }
   }
@@ -232,10 +215,10 @@ class PengumumanModel {
       return PengumumanModel(
         id: json['id'] ?? 0,
         judul: json['judul'] ?? '',
-        isi: json['isi'] ?? '',
+        isi: json['konten'] ?? '',
         kategori: json['kategori'] ?? '',
-        tglMulai: _parseDateTime(json['tgl_mulai']),
-        tglSelesai: _parseDateTime(json['tgl_selesai']),
+        tglMulai: _parseDateTime(json['published_at']),
+        tglSelesai: _parseDateTime(json['published_at']),
         foto: json['foto'],
         idAkun: json['id_akun'] ?? 0,
         createdAt: _parseDateTime(json['created_at']),

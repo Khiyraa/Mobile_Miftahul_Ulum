@@ -24,7 +24,7 @@ class Santri {
       tahunAngkatan: json['tahun_angkatan'],
       sidikJari: json['sidik_jari'],
       status: json['status'],
-      idOrtu: json['id_ortu'],
+      idOrtu: json['id_ortu'] ?? 0,
       ortu: json['ortu'] != null ? Ortu.fromJson(json['ortu']) : null,
     );
   }

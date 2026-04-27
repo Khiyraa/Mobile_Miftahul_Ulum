@@ -1,3 +1,4 @@
+// Service santri mobile
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/santri.dart';
@@ -84,10 +85,16 @@ class ApiService {
     }
 
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/$endpoint'),
-        headers: headers,
-      );
+      final url = '$baseUrl/$endpoint';
+
+      // 🔍 LOG REQUEST
+      print('URL: $url');
+
+      final response = await http.get(Uri.parse(url), headers: headers);
+
+      // 🔍 LOG RESPONSE
+      print('Status Code: ${response.statusCode}');
+      print('Response: ${response.body}');
 
       final Map<String, dynamic> jsonData = json.decode(response.body);
 

@@ -305,12 +305,15 @@ class _JadwalHarianCardState extends State<JadwalHarianCard> {
 
   Widget _buildPrayerItem(Map<String, dynamic> prayer, DateTime date) {
     final bool attended = prayer['attended'] ?? false;
-    final String? jamMasuk = prayer['jamMasuk'];
-    final String? jamKeluar = prayer['jamKeluar'];
+    final String? jamMasuk = prayer['jamMasuk']?.toString();
+    final String? jamKeluar = prayer['jamKeluar']?.toString();
     final bool isToday =
         DateFormat('yyyy-MM-dd').format(DateTime.now()) ==
         DateFormat('yyyy-MM-dd').format(date);
-    final bool isPast = _isPrayerTimePast(prayer['time'], date);
+    final bool isPast = _isPrayerTimePast(
+      (prayer['time'] ?? '00:00') as String,
+      date,
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -345,26 +348,40 @@ class _JadwalHarianCardState extends State<JadwalHarianCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  prayer['name'],
+                  prayer['name'] ?? '',
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(
-                  prayer['time'],
+                  prayer['time'] ?? '',
                   style: TextStyle(fontSize: 9, color: Colors.grey[600]),
                 ),
-                if (attended && jamMasuk != null)
-                  Text(
-                    'Masuk: ${DateFormat.Hm().format(DateTime.parse(jamMasuk))}',
-                    style: TextStyle(fontSize: 8, color: Colors.grey[700]),
+                if (attended && jamMasuk != null && jamMasuk.isNotEmpty) ...[
+                  Builder(
+                    builder: (_) {
+                      final parsedMasuk = DateTime.tryParse(jamMasuk);
+                      if (parsedMasuk == null) return const SizedBox();
+                      return Text(
+                        'Masuk: ${DateFormat.Hm().format(parsedMasuk)}',
+                        style: TextStyle(fontSize: 8, color: Colors.grey[700]),
+                      );
+                    },
                   ),
-                if (attended && jamKeluar != null)
-                  Text(
-                    'Keluar: ${DateFormat.Hm().format(DateTime.parse(jamKeluar))}',
-                    style: TextStyle(fontSize: 8, color: Colors.grey[700]),
+                ],
+                if (attended && jamKeluar != null && jamKeluar.isNotEmpty) ...[
+                  Builder(
+                    builder: (_) {
+                      final parsedKeluar = DateTime.tryParse(jamKeluar);
+                      if (parsedKeluar == null) return const SizedBox();
+                      return Text(
+                        'Keluar: ${DateFormat.Hm().format(parsedKeluar)}',
+                        style: TextStyle(fontSize: 8, color: Colors.grey[700]),
+                      );
+                    },
                   ),
+                ],
               ],
             ),
           ),
@@ -382,22 +399,33 @@ class _JadwalHarianCardState extends State<JadwalHarianCard> {
   }
 
   bool _isPrayerTimePast(String prayerTime, DateTime date) {
+    if (prayerTime.isEmpty || !prayerTime.contains(':')) {
+      return false;
+    }
+
+    final parts = prayerTime.split(':');
+
+    if (parts.length < 2) return false;
+
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+
+    if (hour == null || minute == null) return false;
+
     final now = DateTime.now();
     final today = DateFormat('yyyy-MM-dd').format(now);
     final dateFormatted = DateFormat('yyyy-MM-dd').format(date);
 
-    // Only check if prayer time is past for today
     if (dateFormatted != today) {
-      return dateFormatted.compareTo(today) < 0; // Past date
+      return dateFormatted.compareTo(today) < 0;
     }
 
-    final timeParts = prayerTime.split(':');
     final prayerDateTime = DateTime(
       date.year,
       date.month,
       date.day,
-      int.parse(timeParts[0]),
-      int.parse(timeParts[1]),
+      hour,
+      minute,
     );
 
     return now.isAfter(prayerDateTime);

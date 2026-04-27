@@ -69,6 +69,7 @@ class _DisiplinCardState extends State<DisiplinCard> {
     if (kehadiranData == null) {
       return {
         'totalSholat': 0,
+        'totalSeharusnya': 0,
         'persentase': 0.0,
         'status': 'Tidak Ada Data',
         'statusColor': Colors.grey,
