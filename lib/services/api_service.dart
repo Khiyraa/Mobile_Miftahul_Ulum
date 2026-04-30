@@ -15,7 +15,7 @@ String getBaseUrl() {
 
 Future<Map<String, dynamic>> loginUser(String email, String password) async {
   final baseUrl = getBaseUrl();
-  final url = Uri.parse('$baseUrl/api/login');
+  final url = Uri.parse('$baseUrl/login');
 
   try {
     final response = await http.post(
